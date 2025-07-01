@@ -30,12 +30,12 @@ const PendaftaranPasien = () => {
             <label>Jenis Kelamin</label>
             <div className="jenis-kelamin-gender-container">
               <label className="gender-option">
-                <input type="radio" name="gender" value="pria" />
+                <input className="gender-option-radio" type="radio" name="gender" value="pria" />
                 <span className="custom-radio"></span>
                 Pria
               </label>
               <label className="gender-option">
-                <input type="radio" name="gender" value="wanita" />
+                <input className="gender-option-radio" type="radio" name="gender" value="wanita" />
                 <span className="custom-radio"></span>
                 Wanita
               </label>
@@ -86,6 +86,20 @@ const PendaftaranPasien = () => {
           <div className="pendaftaran-pasien-col pendaftaran-pasien-keluhan">
             <label htmlFor="keluhan">Keluhan</label>
             <textarea id="keluhan" name="keluhan" rows="4"></textarea>
+          </div>
+
+          {/* Checkbox Persetujuan */}
+          <div className="pendaftaran-pasien-col pendaftaran-pasien-persetujuan">
+            <label className="checkbox-container">
+              <input type="checkbox" name="persetujuan" />
+              <span className="custom-checkbox"></span>
+              Saya telah mengisi data dengan benar dan saya bersedia pihak rumah sakit memperoleh data saya
+            </label>
+          </div>
+
+          {/* Tombol Daftar */}
+          <div className="pendaftaran-pasien-col pendaftaran-pasien-tombol-daftar">
+            <button type="submit">Daftar</button>
           </div>
         </div>
       </div>
