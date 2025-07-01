@@ -57,7 +57,7 @@
     flex-direction: column;   
 }
 
-.pendaftaran-pasien-col label {
+.pendaftaran-pasien-col label, .pendaftaran-pasien-jenis-kelamin p {
     color: var(--warna-tersier);
     font-weight: 500;
     font-size: 17px;
@@ -74,10 +74,66 @@
     flex-direction: row;
     gap: 20px;
     margin-top: 10px;
+    align-items: center;
+}
+
+.gender-option-radio {
+  accent-color: var(--warna-primer); 
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
 }
 
 .gender-option {
-    display: flex;
-    align-items: center;
-    gap: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
 }
+
+.jenis-kelamin-gender-container span {
+    font-size: 15px;
+    color: var(--warna-tersier);
+    font-weight: 500;
+}
+
+.label-tanggal {
+  font-size: 17px;
+  font-weight: bold;
+  color: #D1D2D3;
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.tanggal-input-wrapper {
+  position: relative;
+  width: fit-content;
+}
+
+.input-tanggal {
+  padding: 20px 15px 20px 15px;
+  font-size: 15px;
+  border: 1px solid #D1D2D3;
+  border-radius: 5px;
+  font-family: 'DM Sans', sans-serif;
+  color: #D1D2D3;
+  background-color: #fff;
+  outline: none;
+  width: 155px;
+  height: 40px;
+}
+
+/* Untuk menyembunyikan icon default dan ganti dengan custom (opsional) */
+/* .input-tanggal::-webkit-calendar-picker-indicator {
+  background: url('data:image/svg+xml,<svg fill="%23d5d5d5" height="30" viewBox="0 0 24 24" width="30" xmlns="http://www.w3.org/2000/svg"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.89 2 1.99 2H19c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM7 11h5v5H7z"/></svg>') no-repeat;
+  color: transparent;
+  opacity: 1;
+  border: none;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+} */

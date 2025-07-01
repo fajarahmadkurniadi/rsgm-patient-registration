@@ -27,18 +27,16 @@ const PendaftaranPasien = () => {
 
           {/* Jenis Kelamin */}
           <div className="pendaftaran-pasien-col pendaftaran-pasien-jenis-kelamin">
-            <label>Jenis Kelamin</label>
+            <p>Jenis Kelamin</p>
             <div className="jenis-kelamin-gender-container">
-              <label className="gender-option">
+              <div className="gender-option">
                 <input className="gender-option-radio" type="radio" name="gender" value="pria" />
-                <span className="custom-radio"></span>
-                Pria
-              </label>
-              <label className="gender-option">
+                <span>Pria</span>
+              </div>
+              <div className="gender-option">
                 <input className="gender-option-radio" type="radio" name="gender" value="wanita" />
-                <span className="custom-radio"></span>
-                Wanita
-              </label>
+                <span>Wanita</span>
+              </div>
             </div>
           </div>
 
