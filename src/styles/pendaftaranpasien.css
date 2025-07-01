@@ -1,0 +1,36 @@
+#pendaftaran-pasien {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pendaftaran-pasien-header {
+    width: 100%;
+    padding: 30px;
+}
+
+.pendaftaran-pasien-header h5 {
+    font-size: 15px;
+    color: #FFFFFF;
+    font-weight: 500;
+    width: fit-content;
+    padding: 15px 30px;
+    border-radius: 100px;
+    background: linear-gradient(to bottom right, var(--warna-primer-gradient), var(--warna-primer));
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.pendaftaran-pasien-header h5:hover {
+    transform: scale(1.1);
+}
+
+.pendaftaran-pasien-container {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

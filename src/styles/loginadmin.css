@@ -1,0 +1,130 @@
+#loginadmin {
+    background: linear-gradient(to bottom right, var(--warna-sekunder), var(--warna-primer));
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.loginadmin-header {
+    display: flex;
+    padding: 40px 0 0 50px;
+    align-items: center;
+}
+
+.loginadmin-header button {
+    border: none;
+    background: none;
+    width: fit-content;
+    align-items: center;
+    display: flex;
+    width: 11%;
+    justify-content: space-between;
+    color: #FFFFFF;
+    font-size: 21px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.loginadmin-header button:hover {
+    transform: scale(1.1);
+}
+
+.loginadmin-header button img {
+    height: 19px;
+}
+
+.loginadmin-container {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.loginadmin-form-wrapper {
+    background-color: red;
+    display: flex;
+    justify-content: center;
+    width: 30%;
+    height: 75%;
+    padding: 2px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    background-image: linear-gradient(white, white), linear-gradient(to bottom right, var(--warna-primer), var(--warna-sekunder));
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+}
+
+.loginadmin-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 50px;
+    border-radius: 20px;
+}
+
+.loginadmin-form img {
+    width: 113px;
+}
+
+.loginadmin-form h1 {
+    font-size: 27px;
+    margin-top: -30px;
+}
+
+.loginadmin-form h2 {
+    text-align: center;
+    font-size: 14.7px;
+    font-weight: 400;
+    margin-top: -40px;
+    color: #565656;
+}
+
+.loginadmin-username, .loginadmin-password {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 17%;
+}
+
+.loginadmin-username p, .loginadmin-password p {
+    margin-bottom: 5px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.loginadmin-username input, .loginadmin-password input {
+    width: 100%;
+    height: 80%;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 15px;
+    border: 1px solid #565656;
+}
+
+.loginadmin-password, .loginadmin-username {
+    margin-top: -30px;
+}
+
+.loginadmin-form button {
+    width: 100%;
+    padding: 15px 0;
+    border: none;
+    border-radius: 10px;
+    color: var(--warna-tersier);
+    font-size: 17px;
+    font-weight: 600;
+    background: linear-gradient(
+        to bottom right,
+        var(--warna-sekunder-gradient),
+        var(--warna-sekunder)
+    );
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.loginadmin-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 14px rgba(0, 0, 0, 0.70);
+}

@@ -1,0 +1,126 @@
+/* --------- Layout Utama --------- */
+#admin {
+  display: flex;
+  height: 100vh;
+  background: #FFFFFF;
+}
+
+/* --------- Sidebar --------- */
+.admin-sidebar-navbar {
+  display: flex;
+  flex-direction: column;
+  width: 21%;
+  padding: 40px 0;
+  background: var(--warna-primer);
+}
+
+.admin-logo {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  padding-right: 55px;
+}
+
+.admin-logo img {
+  width: 150px;
+}
+
+.admin-sidebar-navbar ul {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  padding-left: 45px;
+  align-items: flex-start;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.admin-sidebar-navbar ul li {
+  width: 100%;
+  position: relative;
+}
+
+.admin-sidebar-navbar ul li a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  color: #FFFFFF;
+  padding: 25px 0 25px 30px;
+  transition: background 0.3s, color 0.3s;
+  z-index: 1;
+  position: relative;
+  background: none;
+}
+
+.admin-sidebar-navbar ul li a svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 15px;
+  fill: currentColor;
+  transition: color 0.3s;
+}
+
+.admin-sidebar-navbar ul li a h3 {
+  font-weight: 500;
+  transition: color 0.3s;
+  color: inherit;
+}
+
+/* --------- Efek Aktif Menggunakan ::before --------- */
+.admin-sidebar-navbar ul li.active {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-sidebar-navbar ul li.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #FFFFFF;
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+  z-index: 0;
+  animation: slideInBackground 0.4s ease forwards;
+}
+
+.admin-sidebar-navbar ul li.active a {
+  color: var(--warna-sekunder);
+  z-index: 1;
+}
+
+.admin-sidebar-navbar ul li.active a svg {
+  color: var(--warna-sekunder);
+  fill: currentColor;
+}
+
+@keyframes slideInBackground {
+  0% {
+    width: 0;
+    left: 100%;
+  }
+  100% {
+    width: 100%;
+    left: 0;
+  }
+}
+
+/* --------- Konten di Samping Sidebar ---------
+.admin-wrapper-core {
+  width: 80%;
+  padding: 20px;
+  background: #f0f0f0;
+}
+
+.admin-core-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-section-boxarea {
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+} */

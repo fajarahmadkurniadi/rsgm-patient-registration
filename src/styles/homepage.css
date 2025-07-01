@@ -1,0 +1,1072 @@
+/* ------- Navbar ------- */
+
+.navbar-for-homepage {
+    padding: 10px 3%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    /* margin-top: 10px; */
+    animation: fadeInDown 1s ease-in-out;
+}
+
+.navbar-for-homepage img:nth-child(2) {
+    display: none;
+}
+
+.desktop-logo {
+    width: 150px;
+    margin: 7px 0;
+    /* animation: fadeInDown 1s ease-in-out; */
+}
+
+.navbar-for-homepage ul li {
+    display: inline-block;
+    list-style: none;
+    margin: 10px 25px;
+}
+
+.navbar-for-homepage ul li a {
+    color: var(--warna-primer);
+    text-decoration: none;
+    font-size: 20px;
+    position: relative;
+    font-weight: 700;
+}
+
+.navbar-for-homepage ul li .nav-ul-li-mc {
+    color: #FFFFFF;
+    padding: 10px 25px;
+    border-radius: 100px;
+    background: linear-gradient(to bottom right, var(--warna-primer-gradient), var(--warna-primer));
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.navbar-for-homepage ul li:first-child {
+    transition: 0.3s;
+}
+
+.navbar-for-homepage ul li:first-child:hover {
+    transform: scale(1.1);
+}
+
+.navbar-for-homepage ul li .nav-ul-li-npc::after {
+    content: '';
+    width: 0;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--warna-primer);
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    transition: 0.5s ease-out;
+}
+
+.navbar-for-homepage ul li a:hover::after {
+    width: 100%;
+}
+
+
+
+/* ------- Hero ------- */
+
+#hero {
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, rgba(231, 193, 31, 0.7), transparent 50%),
+              radial-gradient(circle at bottom right, rgba(54, 128, 62, 0.7), transparent 50%),
+              #ffffff;
+  font-family: 'DM Sans', sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hero-header {
+  padding: 20px 0;
+}
+
+.hero-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 100px;
+  position: relative;
+}
+
+.hero-text {
+    align-self: flex-start;
+}
+
+.hero-text h1 {
+  font-size: 70px;
+  font-weight: 800;
+  color: var(--warna-tersier);
+  line-height: 1.3;
+  margin-bottom: 30px;
+  animation: fadeInLeft 1s ease-in-out;
+}
+
+.hero-text h1:nth-child(2) {
+    display: none;
+}
+
+.cta-button {
+  padding: 20px 40px;
+  font-size: 30px;
+  font-weight: 600;
+  background: linear-gradient(
+      to bottom right,
+      var(--warna-sekunder-gradient),
+      var(--warna-sekunder)
+  );
+  border: none;
+  border-radius: 40px;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+  color: var(--warna-tersier);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: fadeInUp 1s ease-in-out;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 14px rgba(0, 0, 0, 0.70);
+}
+
+.hero-content {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+}
+
+.hero-image-wrapper {
+  flex: 0 0 40%;
+  text-align: right;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.hero-image-wrapper img:nth-child(2) {
+    display: none;
+}
+
+.hero-image {
+  width: 100%;
+  min-width: 350px;
+  height: auto;
+}
+
+.pasien-box {
+  position: absolute;
+  bottom: 30px;
+  right: 40px;
+  background-color: rgba(69, 71, 73, 0.6);
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  animation: fadeInRight 1s ease-in-out;
+}
+
+.pasien-box span {
+  color: var(--warna-sekunder);
+  font-weight: 700;
+}
+
+
+
+/* ------- Jadwal ------- */
+
+#jadwal {
+    background-image: linear-gradient(to right, var(--warna-primer) 0%, transparent 100%), url('../assets/Jadwal/Background Jadwal Pelayanan.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+}
+
+.jadwal-container {
+  padding: 50px 100px;
+  /* padding-bottom: 30px; */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+}
+
+.jadwal-title {
+  animation: fadeInDown 1s ease-in-out;
+}
+
+.jadwal-title h1 {
+    display: flex;
+    font-size: 125px;
+    align-items: center;
+    line-height: 1.1;
+    color: var(--warna-sekunder);
+}
+
+.jadwal-title h1:nth-child(1) {
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+.jadwal-title h1 span:nth-child(1) {
+    margin-right: 25px;
+}
+
+.jadwal-title h1 img {
+    width: 130px;
+}
+
+.jadwal-schedule {
+  width: fit-content;
+  animation: fadeInUp 1s ease-in-out;
+}
+
+.jadwal-schedule-container {
+  /* background-color: var(--warna-tersier); */
+  color: #FFFFFF;
+  padding: 20px;
+  padding-left: 0;
+  font-family: 'DM Sans', sans-serif;
+  width: 770px;
+}
+
+.jadwal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #FFFFFF;
+  padding: 30px 15px;
+}
+
+.jadwal-icon {
+  width: 50px;
+  height: 50px;
+  margin-right: 50px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.kalender {
+  background-image: url('../assets/Jadwal/Calendar Jadwal Pelayanan.webp');
+}
+
+.masjid {
+  background-image: url('../assets/Jadwal/Masjid Jadwal Pelayanan.webp');
+}
+
+.dilarang {
+  background-image: url('../assets/Jadwal/Dilarang - Jadwal Pelayanan.webp');
+}
+
+.jadwal-teks {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.jadwal-hari {
+  font-size: 37px;
+  font-weight: 500;
+}
+
+.jadwal-jam {
+  font-size: 37px;
+  color: var(--warna-sekunder);
+  font-weight: 500;
+}
+
+.jadwal-jam.libur {
+  font-weight: 500;
+  margin-right: 85px
+}
+
+.jadwal-no-border {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+
+
+/* ------- Location ------- */
+
+#location {
+    background: #FFFFFF;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.location-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 100px 0;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.location-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  align-self: center;
+  background-image: linear-gradient(rgba(19, 13, 25, 0.5)), url('../assets/Location/Location Content Background.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  justify-content: space-evenly;
+  align-items: center;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.location-content h1 {
+  color: #FFFFFF;
+  font-size: 50px;
+  text-align: center;
+  animation: fadeInDown 1s ease-in-out;
+}
+
+.location-content button {
+  width: fit-content;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-top: -70px;
+  transition: 0.3s;
+  animation: fadeInUp 1s ease-in-out;
+}
+
+.location-content button:hover {
+  transform: scale(1.1);
+}
+
+.location-content button img {
+  width: 100px;
+}
+
+
+
+/* ------- Testimoni ------- */
+
+#testimoni {
+  background: #FFFFFF;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.testimoni-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 80px 30px;
+  font-family: 'DM Sans', sans-serif;
+  justify-content: space-around;
+}
+
+.testimoni-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: -20px;
+}
+
+.testimoni-title h1 {
+  font-size: 50px;
+  font-weight: 800;
+  background: linear-gradient(to bottom right, var(--warna-primer-gradient), var(--warna-primer));
+  background-clip: text;
+  color: transparent;
+  animation: fadeInDown 1s ease-in-out;
+}
+
+.testimoni-carousel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.testimoni-card {
+  background: white;
+  border: 2px solid #CCCCCC;
+  border-radius: 10px;
+  min-width: 400px;
+  padding: 20px;
+  text-align: left;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  margin: 0 20px;
+  animation: fadeInUp 1s ease-in-out;
+}
+
+.testimoni-track-wrapper {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.testimoni-track {
+  display: flex;
+  gap: 3px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 20px 0;
+}
+
+.testimoni-track::-webkit-scrollbar {
+  display: none; /* sembunyikan scrollbar */
+}
+
+
+.testimoni-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.testimoni-header strong {
+  font-size: 21px;
+}
+
+.testimoni-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+}
+
+.testimoni-status {
+  font-size: 20px;
+  color: #565656;
+}
+
+.testimoni-message {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.testimoni-btn.right {
+  animation: fadeInLeft 1s ease-in-out;
+}
+
+.testimoni-btn {
+  animation: fadeInRight 1s ease-in-out;
+}
+
+.testimoni-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.testimoni-btn:hover {
+  border: none;
+  background: none;
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
+.fade-left,
+.fade-right {
+  position: absolute;
+  top: 0;
+  width: 30px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.fade-left {
+  left: 0;
+  background: linear-gradient(to right, #FFFFFF, rgba(255, 255, 255, 0));
+}
+
+.fade-right {
+  right: 0;
+  background: linear-gradient(to left, #FFFFFF, rgba(255, 255, 255, 0));
+}
+
+
+
+/* ------- Contact ------- */
+
+#contact {
+  background: linear-gradient(to bottom right, var(--warna-primer-gradient), var(--warna-primer));
+  height: fit-content;
+}
+
+.contact-container {
+  padding: 0 100px;
+  display: flex;
+  min-height: 100vh;
+}
+
+.contact-core {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.contact-left {
+  padding: 80px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.contact-left h1 {
+  font-size: 70px;
+  color: #FFFFFF;
+  animation: fadeInLeft 1s ease-in-out;
+}
+
+.contact-left-address {
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  margin-top: 30px;
+}
+
+.contact-left-address p {
+  align-items: center;
+  display: flex;
+  color: #FFFFFF;
+  font-size: 25px;
+  animation: fadeInLeft 1s ease-in-out;
+}
+
+.contact-left-address p a {
+  color: #FFFFFF;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.contact-left-address p a:hover {
+  text-decoration: underline;
+  color: var(--warna-sekunder);
+}
+
+.contact-left-address-logo {
+  width: 37px;
+  margin-right: 20px;
+}
+
+.contact-left-image {
+  width: 200px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.contact-right {
+  padding: 80px 0 0 0;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-right form {
+  width: 100%;
+}
+
+.contact-right form input, form textarea {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: #FFFFFF;
+  padding: 15px;
+  margin: 15px 0;
+  color: var(--warna-primer);
+  font-size: 20px;
+  border-radius: 5px;
+  animation: fadeInRight 1s ease-in-out;
+}
+
+.contact-right-form-justfit button {
+  font-size: 25px;
+  font-weight: 600;
+  color: var(--warna-tersier);
+  border: none;
+  background: linear-gradient(
+    to bottom right,
+    var(--warna-sekunder-gradient),
+    var(--warna-sekunder)
+  );
+  padding: 15px 45px;
+  margin-top: 30px;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  transition: 0.3s;
+  animation: fadeInUp 1s ease-in-out;
+}
+
+.contact-right-form-justfit button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 14px rgba(0, 0, 0, 0.70);
+}
+
+
+
+/* ------- Footer ------- */
+
+#footer {
+  width: 100%;
+  min-height: 37vh;
+  background: var(--warna-tersier);
+}
+
+.footer-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  padding: 0 30px;
+  flex-wrap: wrap;
+  min-height: 37vh;
+}
+
+.footer-left-row {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+  padding: 40px 20px;
+  animation: fadeInDown 1s ease-in-out;
+}
+
+.xyzbca {
+  width: 20px;
+  margin-top: 10px;
+}
+
+.footer-left-row p {
+  font-size: 20px;
+  color: #FFFFFF;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.footer-left-row-social {
+  display: flex;
+  width: 60%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-left-row-social img {
+  height: 33px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.footer-left-row-social img:hover {
+  transform: scale(1.1);
+}
+
+.footer-right-row {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+  padding: 40px 50px;
+  animation: fadeInDown 1s ease-in-out;
+}
+
+.footer-right-row img {
+  width: 143px;
+  height: fit-content;
+  margin-right: 30px;
+}
+
+.footer-right-row h1 {
+  color: #FFFFFF;
+  font-style: italic;
+}
+
+
+
+/* ----------------- MOBILE ----------------- */
+
+@media (max-width: 1124px) {
+
+    .navbar-for-homepage {
+        padding: 10px 7%;
+    }
+
+    .desktop-logo {
+        width: 110px;
+        margin: 0;
+    }
+
+    .navbar-for-homepage img:nth-child(2) {
+        display: block;
+        width: 30px;
+        transition: 0.3s ease;
+        cursor: pointer;
+        animation: fadeInDown 1s ease-in-out;
+    }
+
+    .navbar-for-homepage img:nth-child(2):hover {
+        transform: scale(1.1);
+    }
+
+    .navbar-for-homepage ul {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        height: 100vh;
+        width: 100%;
+        /* background: linear-gradient(to bottom right, var(--warna-primer-gradient), var(--warna-primer)); */
+        background-color: rgba(54, 128, 62, 0.5);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-top: 60px;
+        transition: right 0.4s ease-in-out;
+        z-index: 2;
+        border-left: 2px solid rgba(255,255,255,0.1);
+    }
+    
+    .navbar-for-homepage ul.active {
+        right: 0;
+    }
+    
+    .navbar-for-homepage ul li {
+        margin: 20px 0;
+    }
+    
+    .navbar-for-homepage ul li a {
+        font-size: 22px;
+        color: white;
+        font-weight: 600;
+    }
+
+    .navbar-for-homepage ul li .nav-ul-li-mc {
+        background: linear-gradient(to bottom right, var(--warna-primer-gradient), var(--warna-primer));
+        padding: 15px 30px;
+        transition: 0.3s ease;
+    }  
+
+    .hamburger {
+        z-index: 3;
+        min-width: 30px;
+    }
+
+    #hero {
+        overflow: hidden;
+        background: #FFFFFF;
+    }
+
+    .hero-content {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .hero-section {
+        padding: 0 20px;
+    }
+
+    .hero-text {
+        margin-bottom: -50px;
+    }
+
+    .hero-text h1:nth-child(1) {
+        display: none;
+    }
+    
+    .hero-text h1:nth-child(2) {
+        display: block;
+        font-size: 30px;
+    }
+    
+    .hero-image-wrapper img:nth-child(1) {
+        display: none;
+    }
+
+    .hero-image-wrapper img:nth-child(2) {
+        display: block;
+        transform: translateX(91px) translateY(45px);
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .cta-button {
+        padding: 20px 40px;
+        font-size: 15px;
+    }
+
+    #jadwal {
+      background: var(--warna-primer);
+    }
+
+    .jadwal-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+
+    .jadwal-title {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 100%;
+      align-items: center;
+    }
+
+    .jadwal-title h1 {
+      font-size: 70px;
+    }
+
+    .jadwal-title h1 img {
+      width: 80px;
+    }
+
+    .jadwal-schedule {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .jadwal-icon {
+      width: 25px;
+      margin-right: 20px;
+    }
+
+    .kalender {
+      background-image: url('../assets/Jadwal/Calendar Jadwal Pelayanan Mobile.webp');
+    }
+    
+    .masjid {
+      background-image: url('../assets/Jadwal/Masjid Jadwal Pelayanan Mobile.webp');
+    }
+    
+    .dilarang {
+      background-image: url('../assets/Jadwal/Dilarang - Jadwal Pelayanan Mobile.webp');
+    }
+
+    .jadwal-schedule-container {
+      background: #FFFFFF;
+      padding: 0 30px;
+      border-radius: 10px;
+      /* min-width: 100px;
+      max-width: 500px; */
+      width: fit-content;
+    }
+
+    .jadwal-item {
+      border-bottom: 1px solid var(--warna-tersier);
+      padding: 20px 15px;
+      min-width: 350px;
+    }
+
+    .jadwal-hari {
+      color: var(--warna-tersier);
+      font-size: 17px;
+      font-weight: 500;
+    }
+
+    .jadwal-jam {
+      font-size: 17px;
+      color: var(--warna-sekunder);
+      font-weight: 500;
+    }
+
+    .jadwal-jam.libur {
+      font-weight: 500;
+      margin-right: 38px
+    }
+
+    .jadwal-no-border {
+      border-bottom: none;
+      padding-bottom: 20px;
+    }
+
+    .location-content {
+      width: 80%;
+    }
+
+    .location-content h1 {
+      font-size: 27px;
+    }
+
+    #testimoni {
+      height: 80vh;
+    }
+
+    .testimoni-container {
+      justify-content: space-evenly;
+    }
+
+    .testimoni-title h1 {
+      font-size: 20px;
+    }
+
+    /* .testimoni-title h1 br {
+      display: none;
+    } */
+
+    .testimoni-btn img {
+      width: 30px;
+    }
+
+    .testimoni-card {
+      background: #FFFFFF;
+      border: 2px solid #CCCCCC;
+      border-radius: 10px;
+      min-width: 210px;
+      padding: 20px;
+      text-align: left;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      margin: 0 5px;
+    }
+
+    .testimoni-header {
+      margin-bottom: 10px;
+    }
+
+    .testimoni-header strong {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .testimoni-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+    
+    .testimoni-status {
+      font-size: 9px;
+      color: #565656;
+    }
+    
+    .testimoni-message {
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
+    .fade-left,
+    .fade-right {
+      width: 20px;
+    }
+
+    .contact-container {
+      padding: 0 30px;
+      padding-bottom: 70px;
+    }
+    
+    .contact-core {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .contact-left {
+      padding: 70px 0 0 0;
+      display: flex;
+      /* align-items: center; */
+    }
+
+    .contact-left h1 {
+      font-size: 50px;
+      color: #FFFFFF;
+    }
+    
+    .contact-left-address {
+      height: 13vh;
+      margin-top: 20px;
+    }
+    
+    .contact-left-address p {
+      font-size: 15px;
+    }
+    
+    .contact-left-address-logo {
+      width: 25px;
+      margin-right: 20px;
+    }
+    
+    .contact-left-image {
+      display: none;
+    }
+    
+    .contact-right {
+      padding: 40px 0 0 0;
+      width: fit-content;
+    }
+
+    .contact-right form {
+      width: 100%;
+    }
+    
+    .contact-right form input, form textarea {
+      width: 100%;
+      font-size: 15px;
+    }
+    
+    .contact-right-form-justfit button {
+      font-size: 17px;
+      padding: 15px 40px;
+    }
+
+    .footer-container {
+      align-items: center;
+    }
+
+    .footer-left-row {
+      align-items: center;
+      width: 100%;
+      padding: 40px 20px;
+      padding-bottom: 0;
+    }
+
+    .footer-left-row p {
+      font-size: 13px;
+    }
+
+    .xyzbca {
+      display: none;
+    }
+
+    .footer-left-row-social {
+      width: 100%;
+      padding: 10px 30px;
+    }
+
+    .footer-left-row-social img {
+      height: 30px;
+    }
+
+    .footer-right-row {
+      padding: 40px 20px;
+    }
+    
+    .footer-right-row img {
+      width: 83px;
+    }
+    
+    .footer-right-row h1 {
+      font-size: 17px;
+    }
+  
+}
