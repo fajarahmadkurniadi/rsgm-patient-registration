@@ -89,9 +89,7 @@ const Admin = () => {
 
       <div className="admin-wrapper-core">
         <div className="admin-core-section">
-          <div className="admin-section-boxarea">
             {/* ISI DARI MASING - MASING SIDEBAR */}
-          </div>
         </div>
       </div>
     </div>
