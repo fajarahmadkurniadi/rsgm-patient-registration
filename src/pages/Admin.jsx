@@ -2,11 +2,42 @@ import React, { useState } from 'react'
 import '../styles/admin.css'
 import adminLogo from '../assets/Sidebar/Admin Logo.webp'
 
+// Impor semua komponen admin
+import Dashboard from '../components/admin/Dashboard'
+import DataPasien from '../components/admin/DataPasien'
+import DataDokter from '../components/admin/DataDokter'
+import Jadwal from '../components/admin/Jadwal'
+import RiwayatPendaftaran from '../components/admin/RiwayatPendaftaran'
+import Pesan from '../components/admin/Pesan'
+import Logout from '../components/admin/Logout'
+
 const Admin = () => {
   const [activeMenu, setActiveMenu] = useState('dashboard');
 
   const handleSetActive = (menu) => {
     setActiveMenu(menu);
+  };
+
+  // Fungsi untuk me-render konten berdasarkan menu yang aktif
+  const renderContent = () => {
+    switch (activeMenu) {
+      case 'dashboard':
+        return <Dashboard />;
+      case 'datapasien':
+        return <DataPasien />;
+      case 'datadokter':
+        return <DataDokter />;
+      case 'jadwal':
+        return <Jadwal />;
+      case 'riwayat':
+        return <RiwayatPendaftaran />;
+      case 'pesan':
+        return <Pesan />;
+      case 'logout':
+        return <Logout />;
+      default:
+        return <Dashboard />;
+    }
   };
 
   return (
@@ -90,6 +121,7 @@ const Admin = () => {
       <div className="admin-wrapper-core">
         <div className="admin-core-section">
             {/* ISI DARI MASING - MASING SIDEBAR */}
+            {renderContent()}
         </div>
       </div>
     </div>
