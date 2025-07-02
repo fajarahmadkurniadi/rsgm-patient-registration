@@ -1,13 +1,17 @@
 import React from 'react'
 import '../styles/pendaftaranpasien.css'
 import logoFormPendaftaranPasien from '../assets/Pendaftaran Pasien/Logo Pendaftaran Pasien.webp'
+import { useNavigate } from 'react-router-dom'
 
 const PendaftaranPasien = () => {
+
+  const navigate = useNavigate()
+
   return (
     <>
       <div id="pendaftaran-pasien">
         <div className="pendaftaran-pasien-header">
-          <h5>Kembali</h5>
+          <h5 onClick={() => navigate('/')}>Kembali</h5>
         </div>
         <div className="pendaftaran-pasien-container">
           <img src={logoFormPendaftaranPasien} alt="Logo Pendaftaran Pasien" />

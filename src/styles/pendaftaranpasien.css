@@ -22,6 +22,7 @@
     background: linear-gradient(to bottom right, var(--warna-primer-gradient), var(--warna-primer));
     cursor: pointer;
     transition: 0.3s;
+    animation: fadeInLeft 1s ease-in-out;
 }
 
 .pendaftaran-pasien-header h5:hover {
@@ -39,6 +40,7 @@
 
 .pendaftaran-pasien-container img {
     width: 250px;
+    animation: fadeInDown 1s ease-in-out;
 }
 
 .pendaftaran-pasien-container h1 {
@@ -46,6 +48,7 @@
     color: var(--warna-primer);
     font-weight: 600;
     margin: 40px 0;
+    animation: fadeInDown 1s ease-in-out;
 }
 
 .pendaftaran-pasien-col {
@@ -55,7 +58,8 @@
     gap: 7px;
     /* background-color: gold; */
     display: flex;
-    flex-direction: column;   
+    flex-direction: column;
+    animation: fadeIn 1s ease-in-out;
 }
 
 .pendaftaran-pasien-col label, .pendaftaran-pasien-jenis-kelamin p {
