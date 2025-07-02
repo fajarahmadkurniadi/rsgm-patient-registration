@@ -4,6 +4,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    color: var(--warna-tersier);
 }
 
 .pendaftaran-pasien-header {
@@ -63,10 +64,13 @@
     font-size: 17px;
 }
 
-#namaLengkap, #nik {
+#namaLengkap, #nik, #noHandphone, #poli {
     height: 40px;
     border: solid 1px #D1D2D3;
     border-radius: 5px;
+    padding: 0 15px;
+    color: var(--warna-primer);
+    font-weight: 500;
 }
 
 .jenis-kelamin-gender-container {
@@ -137,3 +141,57 @@
   transform: translateY(-50%);
   cursor: pointer;
 } */
+
+#alamat, #keluhan {
+  padding: 15px;
+  border: solid 1px #D1D2D3;
+  border-radius: 5px;
+  color: var(--warna-primer);
+}
+
+.pendaftaran-pasien-persetujuan {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.pendaftaran-pasien-persetujuan-input {
+  color: var(--warna-primer);
+  border: solid 1px #D1D2D3;
+  border-radius: 5px;
+  zoom: 1.7;
+  accent-color: var(--warna-primer);
+}
+
+.pendaftaran-pasien-persetujuan p {
+  color: var(--warna-tersier);
+  font-weight: 500;
+  font-size: 17px;
+}
+
+.pendaftaran-pasien-tombol-daftar {
+  margin-top: 50px;
+}
+
+.pendaftaran-pasien-tombol-daftar button {
+  font-size: 23px;
+  padding: 15px 0;
+  background: linear-gradient(
+      to bottom right,
+      var(--warna-sekunder-gradient),
+      var(--warna-sekunder)
+  );
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+  color: var(--warna-tersier);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.3s ease-in-out;
+}
+
+.pendaftaran-pasien-tombol-daftar button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 14px rgba(0, 0, 0, 0.70);
+}

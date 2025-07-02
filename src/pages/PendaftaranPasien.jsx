@@ -51,13 +51,13 @@ const PendaftaranPasien = () => {
           {/* Alamat */}
           <div className="pendaftaran-pasien-col pendaftaran-pasien-alamat">
             <label htmlFor="alamat">Alamat</label>
-            <textarea id="alamat" name="alamat" rows="4"></textarea>
+            <textarea id="alamat" name="alamat" rows="3"></textarea>
           </div>
 
           {/* No. Handphone */}
           <div className="pendaftaran-pasien-col pendaftaran-pasien-no-handphone">
             <label htmlFor="noHandphone">Nomor Handphone</label>
-            <input type="tel" id="noHandphone" name="noHandphone" />
+            <input type="number" id="noHandphone" name="noHandphone" pattern="[0-9]*" inputMode="numeric" maxLength="15"placeholder="contoh: 081234567890" />
           </div>
 
           {/* Poli Tujuan */}
@@ -83,16 +83,13 @@ const PendaftaranPasien = () => {
           {/* Keluhan */}
           <div className="pendaftaran-pasien-col pendaftaran-pasien-keluhan">
             <label htmlFor="keluhan">Keluhan</label>
-            <textarea id="keluhan" name="keluhan" rows="4"></textarea>
+            <textarea id="keluhan" name="keluhan" rows="7"></textarea>
           </div>
 
           {/* Checkbox Persetujuan */}
           <div className="pendaftaran-pasien-col pendaftaran-pasien-persetujuan">
-            <label className="checkbox-container">
-              <input type="checkbox" name="persetujuan" />
-              <span className="custom-checkbox"></span>
-              Saya telah mengisi data dengan benar dan saya bersedia pihak rumah sakit memperoleh data saya
-            </label>
+              <input className="pendaftaran-pasien-persetujuan-input" type="checkbox" name="persetujuan" />
+              <p>Saya telah mengisi data dengan benar dan saya bersedia pihak rumah sakit memperoleh data saya</p>
           </div>
 
           {/* Tombol Daftar */}
