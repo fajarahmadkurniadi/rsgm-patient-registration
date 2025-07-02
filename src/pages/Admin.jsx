@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import '../styles/admin.css'
 import adminLogo from '../assets/Sidebar/Admin Logo.webp'
 
-// Impor semua komponen admin
+// Impor dari semua komponen admin
 import Dashboard from '../components/admin/Dashboard'
 import DataPasien from '../components/admin/DataPasien'
 import DataDokter from '../components/admin/DataDokter'

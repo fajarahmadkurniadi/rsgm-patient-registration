@@ -1,3 +1,5 @@
+// src/pages/LoginAdmin.jsx
+
 import React, { useState } from 'react';
 import '../styles/loginadmin.css';
 import arrowBack from '../assets/Login Admin/Login Admin Arrow.webp';
@@ -23,6 +25,8 @@ const LoginAdmin = () => {
       });
 
       if (response.ok) {
+        // Simpan status login ke localStorage
+        localStorage.setItem('isAdminLoggedIn', 'true');
         navigate('/admin');
       } else {
         const data = await response.json();
@@ -34,49 +38,48 @@ const LoginAdmin = () => {
   };
 
   return (
-    <>
-      <div id="loginadmin">
-        <div className="loginadmin-header">
-          <button onClick={() => navigate('/')}>
-            <img src={arrowBack} /> Home Page
-          </button>
-        </div>
-        <div className="loginadmin-container">
-          <div className="loginadmin-form-wrapper">
-            <form className="loginadmin-form" onSubmit={handleLogin}>
-              <img src={logoDesktop} />
-              <h1>Selamat Datang Admin!</h1>
-              <h2>
-                Memelihara senyum, memelihara kehidupan. Semangat bekerja hari
-                ini dan jangan lupa tersenyum 😁
-              </h2>
-              <div className="loginadmin-username">
-                <p>Email</p>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Masukkan Email"
-                  required
-                />
-              </div>
-              <div className="loginadmin-password">
-                <p>Password</p>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Masukkan Password"
-                  required
-                />
-              </div>
-              {error && <p style={{ color: 'red', fontSize: '14px' }}>{error}</p>}
-              <button type="submit">Login</button>
-            </form>
-          </div>
+    // ... sisa kode JSX Anda tetap sama
+    <div id="loginadmin">
+      <div className="loginadmin-header">
+        <button onClick={() => navigate('/')}>
+          <img src={arrowBack} /> Halaman Utama
+        </button>
+      </div>
+      <div className="loginadmin-container">
+        <div className="loginadmin-form-wrapper">
+          <form className="loginadmin-form" onSubmit={handleLogin}>
+            <img src={logoDesktop} />
+            <h1>Selamat Datang Admin!</h1>
+            <h2>
+              Memelihara senyum, memelihara kehidupan. Semangat bekerja hari
+              ini dan jangan lupa tersenyum 😁
+            </h2>
+            <div className="loginadmin-username">
+              <p>Email</p>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Masukkan Email"
+                required
+              />
+            </div>
+            <div className="loginadmin-password">
+              <p>Password</p>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Masukkan Password"
+                required
+              />
+            </div>
+            {error && <p style={{ color: 'red', fontSize: '14px' }}>{error}</p>}
+            <button type="submit">Masuk</button>
+          </form>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

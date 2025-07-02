@@ -14,15 +14,15 @@
 .loginadmin-header button {
     border: none;
     background: none;
-    width: fit-content;
     align-items: center;
     display: flex;
-    width: 11%;
+    width: 14%;
     justify-content: space-between;
     color: #FFFFFF;
     font-size: 21px;
     cursor: pointer;
     transition: 0.3s;
+    animation: fadeInLeft 1s ease-in-out;
 }
 
 .loginadmin-header button:hover {
@@ -52,6 +52,7 @@
     background-image: linear-gradient(white, white), linear-gradient(to bottom right, var(--warna-primer), var(--warna-sekunder));
     background-origin: border-box;
     background-clip: content-box, border-box;
+    animation: fadeIn 1s ease-in-out;
 }
 
 .loginadmin-form {
@@ -61,6 +62,7 @@
     align-items: center;
     padding: 40px 50px;
     border-radius: 20px;
+    animation: fadeInUp 1s ease-in-out;
 }
 
 .loginadmin-form img {
