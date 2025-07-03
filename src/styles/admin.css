@@ -221,6 +221,10 @@
   color: #FFFFFF;
 }
 
+.dashboard-list {
+  display: flex;
+}
+
 
 
 /* ------- Logout ------- */

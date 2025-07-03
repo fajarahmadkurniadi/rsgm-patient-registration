@@ -84,7 +84,10 @@ const Dashboard = () => {
             <p>Jadwal Dokter Hari ini</p>
           </div>
         </div>
-        <div className="dashboard-list"><h3>suiybdfbus</h3></div>
+        <div className="dashboard-list">
+          <div className="dashboard-list-graphic"></div>
+          <div className="dashboard-list-patient-daily"></div>
+        </div>
       </div>
     </>
   )
