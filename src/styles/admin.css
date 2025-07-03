@@ -3,6 +3,7 @@
   display: flex;
   height: 100vh;
   background: #FFFFFF;
+  color: var(--warna-tersier);
 }
 
 /* --------- Sidebar --------- */
@@ -12,6 +13,7 @@
   width: 21%;
   padding: 40px 0;
   background: var(--warna-primer);
+  animation: fadeInLeft 0.7s ease-in-out;
 }
 
 .admin-logo {
@@ -118,6 +120,107 @@
   flex-direction: column;
   height: 100%;
 }
+
+/* ------- Dashboard ------- */
+
+#dashboard {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 30px;
+  justify-content: space-between;
+}
+
+.dashboard-header {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  /* background-color: hotpink; */
+}
+
+.dashboard-header h1 {
+  font-size: 30px;
+  background: linear-gradient(to bottom right, var(--warna-sekunder), var(--warna-primer));
+  background-clip: text;
+  color: transparent;
+}
+
+.dashboard-header-components {
+  display: flex;
+  margin-top: 10px;
+  /* background-color: firebrick; */
+  width: 30%;
+  height: fit-content;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-header-components img {
+  width: 25px;
+  height: fit-content;
+  transition: 0.3s;
+}
+
+.dashboard-header-components img:hover {
+  transform: scale(1.1);
+}
+
+.dashboard-header-components p {
+  font-size: 21px;
+}
+
+.dashboard-header-components h5 {
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.dashboard-jumlah-keterangan {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.dashboard-jumlah-keterangan-core {
+  width: 271px;
+  background: linear-gradient(to bottom right, var(--warna-primer-gradient), var(--warna-primer));
+  padding: 25px 30px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dashboard-jumlah-keterangan-core-patient {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.dashboard-jumlah-keterangan-core-patient-number {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-jumlah-keterangan-core-patient-number h2 {
+  font-size: 50px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.dashboard-jumlah-keterangan-core-patient img {
+  width: 70px;
+}
+
+.dashboard-jumlah-keterangan-core p {
+  font-size: 20px;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
 
 
 /* ------- Logout ------- */
