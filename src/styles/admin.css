@@ -144,22 +144,40 @@
   background: linear-gradient(to bottom right, var(--warna-sekunder), var(--warna-primer));
   background-clip: text;
   color: transparent;
+  animation: fadeInLeft 1s ease-in-out;
 }
 
 .dashboard-header-components {
+  position: relative;
   display: flex;
   margin-top: 10px;
-  /* background-color: firebrick; */
   width: 30%;
   height: fit-content;
   align-items: center;
   justify-content: space-between;
+  animation: fadeInUp 1s ease-in-out;
 }
 
 .dashboard-header-components img {
   width: 25px;
   height: fit-content;
   transition: 0.3s;
+}
+
+.notification-overlay {
+  position: absolute;
+  top: 120%; 
+  right: 0;
+  width: 300px;
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border: 1px solid #EAEAEA;
+  padding: 1.5rem;
+  z-index: 10;
+  animation: fadeIn 0.3s ease-in-out;
+  text-align: center;
+  color: var(--warna-tersier);
 }
 
 .dashboard-header-components img:hover {
@@ -179,6 +197,7 @@
   display: flex;
   width: 100%;
   justify-content: space-between;
+  animation: fadeInDown 1s ease-in-out;
 }
 
 .dashboard-jumlah-keterangan-core {
@@ -223,6 +242,114 @@
 
 .dashboard-list {
   display: flex;
+  gap: 30px;
+  /* flex: 1; ------- Biarkan flex-grow agar mengisi ruang yang tersedia ------- */
+  min-height: 0; /* Trik untuk flexbox agar tidak overflow di beberapa browser */
+  margin-top: 20px;
+  justify-content: space-between;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.dashboard-list-graphic {
+  background-color: #FFFFFF;
+  padding: 1.5rem; /* Sedikit mengurangi padding */
+  border-radius: 10px;
+  width: 60%;
+  height: 400px;
+  display: flex;
+  flex-direction: column; 
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.7);
+}
+
+.dashboard-list-graphic h2 {
+  color: var(--warna-tersier);
+  font-size: 30px;
+  margin-top: 0;
+  margin-bottom: 1rem; /* Mengurangi margin bawah */
+  font-weight: 600;
+  text-align: left;
+  flex-shrink: 0; /* Mencegah judul agar tidak menyusut */
+}
+
+.chart-wrapper {
+  position: relative; /* Wajib, agar canvas bisa di-contain */
+  flex: 1; /* Mengisi sisa ruang di dalam .dashboard-list-graphic */
+  min-height: 0; /* Trik untuk flexbox */
+}
+
+.dashboard-list-patient-daily {
+  display: flex; /* Menggunakan flexbox untuk layout */
+  flex-direction: column; /* Konten diatur vertikal */
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.7);
+  padding: 1.5rem;
+  border-radius: 10px;
+  width: 50%;
+}
+
+.patient-daily-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Memastikan container mengisi parent */
+}
+
+.patient-daily-container h2 {
+  color: var(--warna-tersier);
+  font-size: 24px;
+  font-weight: 600;
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+/* Wrapper untuk tabel agar bisa di-scroll */
+.patient-daily-table-wrapper {
+  overflow-y: auto; /* Aktifkan scroll vertikal jika konten meluap */
+  /* flex-grow: 1; */
+  max-height: 300px;
+}
+
+/* Mengatur scrollbar agar lebih minimalis (opsional) */
+.patient-daily-table-wrapper::-webkit-scrollbar {
+  width: 5px;
+}
+.patient-daily-table-wrapper::-webkit-scrollbar-thumb {
+  background-color: #D1D2D3;
+  border-radius: 10px;
+}
+
+.patient-daily-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.patient-daily-table th, .patient-daily-table td {
+  padding: 12px 8px;
+  text-align: left;
+  font-size: 14px;
+  color: var(--warna-tersier);
+}
+
+.patient-daily-table th {
+  font-weight: 700;
+  border-bottom: 2px solid var(--warna-tersier);
+}
+
+.patient-daily-table tbody tr {
+  border-bottom: 1px solid #D1D2D3;
+}
+
+/* .patient-daily-table tbody tr:last-child {
+  border-bottom: none; 
+} */
+
+.patient-daily-table td#poli {
+  border-right: none;
+  border-left: none;
+  padding: 12px 8px;
+}
+
+.poli-umum, .poli-gigi, .poli-anak, .poli-bedah {
+  color: var(--warna-primer); /* Warna hijau */
+  font-weight: 500;
 }
 
 
