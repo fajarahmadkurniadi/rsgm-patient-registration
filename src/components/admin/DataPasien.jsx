@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Clock from './Clock';
 import PatientDetailOverlay from './PatientDetailOverlay';
+import searchIcon from '../../assets/Icon/Search.webp'; // Impor ikon search
 
-// Data dummy awal. Dalam aplikasi nyata, ini akan diambil dari server/API.
 const initialPatientData = [
   { id: 1, no_rm: '100001', nama: 'Andi Sukma', nik: '1271021412960021', tanggal: '17/05/2025', tanggal_lahir: '14/12/1996', jenis_kelamin: 'Laki-laki', alamat: 'Jl. Merdeka No. 15, Medan', no_hp: '0812-1111-2222' },
   { id: 2, no_rm: '100002', nama: 'Siti Dewi', nik: '1271034912010022', tanggal: '17/05/2025', tanggal_lahir: '25/03/1999', jenis_kelamin: 'Perempuan', alamat: 'Jl. Mawar No. 10, Medan', no_hp: '0812-3456-7890' },
@@ -17,66 +17,38 @@ const initialPatientData = [
 ];
 
 const DataPasien = () => {
-  // State untuk menyimpan data pasien utama (sumber kebenaran)
   const [allPatientData, setAllPatientData] = useState(initialPatientData);
-
-  // State untuk input filter
   const [searchTerm, setSearchTerm] = useState('');
   const [searchDate, setSearchDate] = useState('');
-  
-  // State untuk menampung data yang akan ditampilkan setelah difilter
   const [filteredData, setFilteredData] = useState(allPatientData);
-
-  // State untuk mengelola overlay (pasien mana yang dipilih)
   const [selectedPatient, setSelectedPatient] = useState(null);
 
-  // Fungsi untuk membuka overlay dengan data pasien yang dipilih
-  const handleViewDetail = (pasien) => {
-    setSelectedPatient(pasien);
-  };
+  const handleViewDetail = (pasien) => setSelectedPatient(pasien);
+  const handleCloseOverlay = () => setSelectedPatient(null);
 
-  // Fungsi untuk menutup overlay
-  const handleCloseOverlay = () => {
-    setSelectedPatient(null);
-  };
-
-  // Fungsi untuk memperbarui data pasien di state utama
   const handleUpdatePatient = (updatedPatient) => {
-    setAllPatientData(prevData => 
-      prevData.map(patient => 
-        patient.id === updatedPatient.id ? updatedPatient : patient
-      )
-    );
+    setAllPatientData(prevData => prevData.map(patient => patient.id === updatedPatient.id ? updatedPatient : patient));
     handleCloseOverlay(); 
   };
 
-  // Fungsi untuk menghapus data pasien dari state utama
   const handleDeletePatient = (patientId) => {
-    setAllPatientData(prevData =>
-      prevData.filter(patient => patient.id !== patientId)
-    );
+    setAllPatientData(prevData => prevData.filter(patient => patient.id !== patientId));
     handleCloseOverlay();
   };
   
-  // useEffect untuk menjalankan filter setiap kali ada perubahan pada input atau data utama
   useEffect(() => {
     let data = [...allPatientData];
-
-    // Filter berdasarkan Nama atau No. RM
     if (searchTerm) {
       data = data.filter(pasien =>
         pasien.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
         pasien.no_rm.includes(searchTerm)
       );
     }
-
-    // Filter berdasarkan Tanggal Daftar
     if (searchDate) {
       const [year, month, day] = searchDate.split('-');
       const formattedDate = `${day}/${month}/${year}`;
       data = data.filter(pasien => pasien.tanggal === formattedDate);
     }
-
     setFilteredData(data);
   }, [searchTerm, searchDate, allPatientData]);
 
@@ -91,15 +63,19 @@ const DataPasien = () => {
         </div>
         <div className="data-pasien-content">
           <div className="data-pasien-search-column">
-            <input 
-              type="text" 
-              placeholder="Cari berdasarkan No. RM atau Nama Pasien" 
-              className="search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            <div className="search-bar-wrapper">
+              <img src={searchIcon} alt="Cari" className="search-icon"/>
+              <input 
+                type="text" 
+                placeholder="Cari berdasarkan No. RM atau Nama Pasien" 
+                className="search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
             <input 
               type="date" 
+              className="date-input"
               value={searchDate}
               onChange={(e) => setSearchDate(e.target.value)}
             />
@@ -145,13 +121,9 @@ const DataPasien = () => {
         </div>
         <div className="data-pasien-footer">
           <p>Menampilkan {filteredData.length} dari <span>{allPatientData.length}</span> Pasien</p>
-          <div className="data-pasien-footer-pagination">
-            {/* Pagination bisa ditambahkan di sini nanti */}
-          </div>
         </div>
       </div>
 
-      {/* Render overlay secara kondisional jika ada pasien yang dipilih */}
       {selectedPatient && (
         <PatientDetailOverlay 
           patient={selectedPatient} 

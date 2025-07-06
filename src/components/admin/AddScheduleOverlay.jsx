@@ -36,18 +36,27 @@ const AddScheduleOverlay = ({ onClose, onAddSchedule, doctorList }) => {
     setSelectedDoctorId(e.target.value);
   };
   
+  const getDayName = (dateStr) => {
+      if (!dateStr) return '';
+      const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+      return days[new Date(dateStr + 'T00:00:00').getDay()];
+  };
+
   const handleSave = () => {
     if (!selectedDoctorId || !scheduleData.hari_tanggal || !scheduleData.jam_mulai || !scheduleData.jam_selesai) {
       alert("Harap lengkapi semua data jadwal.");
       return;
     }
     const doctor = doctorList.find(d => d.id.toString() === selectedDoctorId);
+    
+    // Buat objek jadwal baru dengan format yang benar
     const newSchedule = {
       id: Date.now(), // ID unik untuk jadwal baru
       nama: doctor.nama,
       nip: doctor.nip,
       spesialis: doctor.spesialis,
-      jadwal: `${scheduleData.hari_tanggal} (${scheduleData.jam_mulai} - ${scheduleData.jam_selesai})`, // Format jadwal baru
+      // BUAT JADWAL STRING YANG SESUAI DENGAN FILTER
+      jadwal: `${getDayName(scheduleData.hari_tanggal)} (${scheduleData.jam_mulai} - ${scheduleData.jam_selesai})`,
       status: scheduleData.status,
     };
     onAddSchedule(newSchedule);
@@ -58,9 +67,6 @@ const AddScheduleOverlay = ({ onClose, onAddSchedule, doctorList }) => {
       <div className="js-overlay-container" onClick={(e) => e.stopPropagation()}>
         <div className="js-overlay-header">
           <h2>Tambah Jadwal</h2>
-          <button className="js-btn-close" onClick={onClose}>
-            <img src={closeIcon} alt="Close" />
-          </button>
         </div>
         <div className="js-overlay-content">
           <div className="js-form-row">
