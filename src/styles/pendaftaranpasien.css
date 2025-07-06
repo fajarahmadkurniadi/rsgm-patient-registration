@@ -29,6 +29,13 @@
     transform: scale(1.1);
 }
 
+.pendaftaran-pasien-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%; /* Biarkan form mengisi container-nya */
+}
+
 .pendaftaran-pasien-container {
     width: 100%;
     height: fit-content;
@@ -56,7 +63,6 @@
     width: 60%;
     height: fit-content;
     gap: 7px;
-    /* background-color: gold; */
     display: flex;
     flex-direction: column;
     animation: fadeIn 1s ease-in-out;
@@ -68,13 +74,18 @@
     font-size: 17px;
 }
 
-#namaLengkap, #nik, #noHandphone, #poli {
-    height: 40px;
-    border: solid 1px #D1D2D3;
-    border-radius: 5px;
-    padding: 0 15px;
-    color: var(--warna-primer);
-    font-weight: 500;
+#namaLengkap, #nik, #noHandphone, #poli, #tanggalLahir, #jamTujuan, #hariTujuan {
+  height: 40px;
+  border: solid 1px #D1D2D3;
+  border-radius: 5px;
+  padding: 0 15px;
+  color: var(--warna-primer);
+  font-weight: 500;
+  font-size: 15px;
+}
+
+#jamTujuan {
+  width: fit-content;
 }
 
 .jenis-kelamin-gender-container {
@@ -151,6 +162,8 @@
   border: solid 1px #D1D2D3;
   border-radius: 5px;
   color: var(--warna-primer);
+  font-weight: 500;
+  font-size: 15px;
 }
 
 .pendaftaran-pasien-persetujuan {

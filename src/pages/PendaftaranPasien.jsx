@@ -1,11 +1,74 @@
-import React from 'react'
-import '../styles/pendaftaranpasien.css'
-import logoFormPendaftaranPasien from '../assets/Pendaftaran Pasien/Logo Pendaftaran Pasien.webp'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from 'react';
+import '../styles/pendaftaranpasien.css';
+import logoFormPendaftaranPasien from '../assets/Pendaftaran Pasien/Logo Pendaftaran Pasien.webp';
+import { useNavigate } from 'react-router-dom';
 
 const PendaftaranPasien = () => {
+  const navigate = useNavigate();
+  
+  const [formData, setFormData] = useState({
+    namaLengkap: '',
+    nik: '',
+    jenisKelamin: '',
+    tanggalLahir: '',
+    alamat: '',
+    noHandphone: '',
+    poli: '',
+    hariTujuan: '',
+    jamTujuan: '',
+    keluhan: '',
+    persetujuan: false,
+  });
 
-  const navigate = useNavigate()
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    // --- VALIDASI HARI MINGGU DI SINI ---
+    if (name === 'hariTujuan') {
+      // Buat objek Date dari tanggal yang dipilih
+      // Tambahkan T00:00:00 untuk menghindari masalah timezone
+      const selectedDay = new Date(value + 'T00:00:00');
+      
+      // getDay() mengembalikan 0 untuk hari Minggu
+      if (selectedDay.getDay() === 0) {
+        alert('Pemeriksaan tidak tersedia di hari Minggu, harap pilih hari lain.');
+        return; // Hentikan pembaruan state jika hari Minggu
+      }
+    }
+    // --- AKHIR VALIDASI ---
+
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Validasi form kosong
+    const requiredFields = ['namaLengkap', 'nik', 'jenisKelamin', 'tanggalLahir', 'alamat', 'noHandphone', 'poli', 'hariTujuan', 'jamTujuan', 'keluhan'];
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        alert('Harap isi semua kolom yang wajib diisi.');
+        return;
+      }
+    }
+    if (!formData.persetujuan) {
+      alert('Anda harus menyetujui persyaratan untuk mendaftar.');
+      return;
+    }
+
+    // Validasi waktu
+    const jamAwal = "08:30";
+    const jamAkhir = "17:00";
+    if (formData.jamTujuan < jamAwal || formData.jamTujuan > jamAkhir) {
+        alert(`Jam tujuan pemeriksaan harus antara ${jamAwal} dan ${jamAkhir}.`);
+        return;
+    }
+
+    navigate('/buktipendaftaran', { state: { registrationData: formData } });
+  };
 
   return (
     <>
@@ -17,93 +80,107 @@ const PendaftaranPasien = () => {
           <img src={logoFormPendaftaranPasien} alt="Logo Pendaftaran Pasien" />
           <h1>Pendaftaran Pasien</h1>
 
-          {/* Nama Lengkap */}
-          <div className="pendaftaran-pasien-col pendaftaran-pasien-nama-lengkap">
-            <label htmlFor="namaLengkap">Nama Lengkap</label>
-            <input type="text" id="namaLengkap" name="namaLengkap" />
-          </div>
+          <form onSubmit={handleSubmit} className="pendaftaran-pasien-form">
+            <div className="pendaftaran-pasien-col">
+              <label htmlFor="namaLengkap">Nama Lengkap</label>
+              <input type="text" id="namaLengkap" name="namaLengkap" value={formData.namaLengkap} onChange={handleInputChange} />
+            </div>
 
-          {/* NIK */}
-          <div className="pendaftaran-pasien-col pendaftaran-pasien-nik">
-            <label htmlFor="nik">Nomor Induk Keluarga</label>
-            <input type="number" id="nik" name="nik" />
-          </div>
+            <div className="pendaftaran-pasien-col">
+              <label htmlFor="nik">Nomor Induk Keluarga</label>
+              <input type="number" id="nik" name="nik" value={formData.nik} onChange={handleInputChange} />
+            </div>
 
-          {/* Jenis Kelamin */}
-          <div className="pendaftaran-pasien-col pendaftaran-pasien-jenis-kelamin">
-            <p>Jenis Kelamin</p>
-            <div className="jenis-kelamin-gender-container">
-              <div className="gender-option">
-                <input className="gender-option-radio" type="radio" name="gender" value="pria" />
-                <span>Pria</span>
-              </div>
-              <div className="gender-option">
-                <input className="gender-option-radio" type="radio" name="gender" value="wanita" />
-                <span>Wanita</span>
+            <div className="pendaftaran-pasien-col">
+              <p>Jenis Kelamin</p>
+              <div className="jenis-kelamin-gender-container">
+                <div className="gender-option">
+                  <input className="gender-option-radio" type="radio" name="jenisKelamin" value="Pria" checked={formData.jenisKelamin === 'Pria'} onChange={handleInputChange} />
+                  <span>Pria</span>
+                </div>
+                <div className="gender-option">
+                  <input className="gender-option-radio" type="radio" name="jenisKelamin" value="Wanita" checked={formData.jenisKelamin === 'Wanita'} onChange={handleInputChange} />
+                  <span>Wanita</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Tanggal Lahir */}
-          <div className="pendaftaran-pasien-col pendaftaran-pasien-tanggal-lahir">
-            <label htmlFor="tanggalLahir" className="label-tanggal">Tanggal Lahir</label>
-            <div className="tanggal-input-wrapper">
-              <input type="date" id="tanggalLahir" className="input-tanggal" placeholder="DD/MM/YYYY" />
+            <div className="pendaftaran-pasien-col">
+              <label htmlFor="tanggalLahir">Tanggal Lahir</label>
+              <input type="date" id="tanggalLahir" name="tanggalLahir" className="input-tanggal" value={formData.tanggalLahir} onChange={handleInputChange} />
             </div>
-          </div>
-          
-          {/* Alamat */}
-          <div className="pendaftaran-pasien-col pendaftaran-pasien-alamat">
-            <label htmlFor="alamat">Alamat</label>
-            <textarea id="alamat" name="alamat" rows="3"></textarea>
-          </div>
+            
+            <div className="pendaftaran-pasien-col">
+              <label htmlFor="alamat">Alamat</label>
+              <textarea id="alamat" name="alamat" rows="3" value={formData.alamat} onChange={handleInputChange}></textarea>
+            </div>
 
-          {/* No. Handphone */}
-          <div className="pendaftaran-pasien-col pendaftaran-pasien-no-handphone">
-            <label htmlFor="noHandphone">Nomor Handphone</label>
-            <input type="number" id="noHandphone" name="noHandphone" pattern="[0-9]*" inputMode="numeric" maxLength="15"placeholder="contoh: 081234567890" />
-          </div>
+            <div className="pendaftaran-pasien-col">
+              <label htmlFor="noHandphone">Nomor Handphone</label>
+              <input type="number" id="noHandphone" name="noHandphone" value={formData.noHandphone} onChange={handleInputChange} />
+            </div>
 
-          {/* Poli Tujuan */}
-          <div className="pendaftaran-pasien-col pendaftaran-pasien-poli-tujuan">
-            <label htmlFor="poli">Poli Tujuan</label>
-            <select id="poli" name="poli" className="select-poli">
+            <div className="pendaftaran-pasien-col">
+              <label htmlFor="poli">Poli Tujuan</label>
+              <select id="poli" name="poli" className="select-poli" value={formData.poli} onChange={handleInputChange}>
                 <option value="">Pilih Poli Tujuan</option>
-                <option value="umum">Poli Gigi Umum</option>
-                <option value="konservasi">Poli Konservasi Gigi</option>
-                <option value="bedah-mulut">Poli Bedah Mulut dan Maksilofasial</option>
-                <option value="prostodonsia">Poli Prostodonsia</option>
-                <option value="ortodonsia">Poli Ortodonsia</option>
-                <option value="periodonsia">Poli Periodonsia</option>
-                <option value="pediatric">Poli Kedokteran Gigi Anak</option>
-                <option value="radiologi">Poli Radiologi Gigi</option>
-                <option value="penyakit-mulut">Poli Penyakit Mulut</option>
-                <option value="gigi-komunitas">Poli Endodonti</option>
-                <option value="gigi-komunitas">Poli Gigi Estetika dan Kosmetik</option>
-                <option value="gigi-komunitas">Poli Gigi Geriatri</option>
-            </select>
-          </div>
+                <option value="Ortodonti">Poli Ortodonti</option>
+                <option value="Bedah Mulut">Poli Bedah Mulut dan Maksilofasial</option>
+                <option value="Gigi Umum">Poli Gigi Umum</option>
+                <option value="Konservasi Gigi">Poli Konservasi Gigi</option>
+                <option value="Prosthodonsia">Poli Prostodonsia</option>
+                <option value="Kesehatan Gigi Anak">Poli Kedokteran Gigi Anak</option>
+                <option value="Periodonsia">Poli Periodonsia</option>
+                <option value="Endodonti">Poli Endodonti</option>
+                <option value="Penyakit Mulut">Poli Penyakit Mulut</option>
+                <option value="Radiologi Gigi dan Mulut">Poli Radiologi Gigi dan Mulut</option>
+                <option value="Gigi Estetika dan Kosmetik">Poli Gigi Estetika dan Kosmetik</option>
+                <option value="Gigi Geriatri">Poli Gigi Geriatri</option>
+              </select>
+            </div>
+            
+            <div className="pendaftaran-pasien-col">
+              <label htmlFor="hariTujuan">Hari Tujuan Pemeriksaan</label>
+              <input 
+                type="date" 
+                id="hariTujuan" 
+                name="hariTujuan" 
+                value={formData.hariTujuan} 
+                onChange={handleInputChange}
+              />
+            </div>
 
-          {/* Keluhan */}
-          <div className="pendaftaran-pasien-col pendaftaran-pasien-keluhan">
-            <label htmlFor="keluhan">Keluhan</label>
-            <textarea id="keluhan" name="keluhan" rows="7"></textarea>
-          </div>
+            <div className="pendaftaran-pasien-col">
+              <label htmlFor="jamTujuan">Jam Tujuan Pemeriksaan</label>
+              <input 
+                type="time" 
+                id="jamTujuan" 
+                name="jamTujuan" 
+                value={formData.jamTujuan} 
+                onChange={handleInputChange}
+                min="08:30"
+                max="17:00"
+              />
+            </div>
 
-          {/* Checkbox Persetujuan */}
-          <div className="pendaftaran-pasien-col pendaftaran-pasien-persetujuan">
-              <input className="pendaftaran-pasien-persetujuan-input" type="checkbox" name="persetujuan" />
+            <div className="pendaftaran-pasien-col">
+              <label htmlFor="keluhan">Keluhan</label>
+              <textarea id="keluhan" name="keluhan" rows="7" value={formData.keluhan} onChange={handleInputChange}></textarea>
+            </div>
+
+            <div className="pendaftaran-pasien-col pendaftaran-pasien-persetujuan">
+              <input className="pendaftaran-pasien-persetujuan-input" type="checkbox" name="persetujuan" checked={formData.persetujuan} onChange={handleInputChange} />
               <p>Saya telah mengisi data dengan benar dan saya bersedia pihak rumah sakit memperoleh data saya</p>
-          </div>
+            </div>
 
-          {/* Tombol Daftar */}
-          <div className="pendaftaran-pasien-col pendaftaran-pasien-tombol-daftar">
-            <button type="submit">Daftar</button>
-          </div>
+            <div className="pendaftaran-pasien-col pendaftaran-pasien-tombol-daftar">
+              <button type="submit">Daftar</button>
+            </div>
+          </form>
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default PendaftaranPasien
+export default PendaftaranPasien;

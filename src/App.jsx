@@ -1,10 +1,9 @@
-// src/App.jsx
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Homepage from './pages/Homepage';
 import LoginAdmin from './pages/LoginAdmin';
 import Admin from './pages/Admin';
 import PendaftaranPasien from './pages/PendaftaranPasien';
+import BuktiPendaftaran from './pages/BuktiPendaftaran';
 import PrivateRoute from './components/PrivateRoute'; // Impor PrivateRoute
 
 function App() {
@@ -22,6 +21,7 @@ function App() {
           }
         />
         <Route path="/pendaftaranpasien" element={<PendaftaranPasien />} />
+        <Route path="buktipendaftaran" element={<BuktiPendaftaran/>} />
       </Routes>
     </Router>
   );

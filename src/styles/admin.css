@@ -354,6 +354,1470 @@
 
 
 
+/* ------- Data Pasien ------- */
+
+#data-pasien {
+  padding: 20px 30px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  color: var(--warna-tersier);
+}
+
+.data-pasien-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-shrink: 0; /* Mencegah header menyusut */
+}
+
+.data-pasien-header h1 {
+  font-size: 50px;
+  background: linear-gradient(to bottom right, var(--warna-sekunder), var(--warna-primer));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: fadeInLeft 1s ease-in-out;
+}
+
+.data-pasien-header-components {
+  display: flex;
+  width: 25%;
+  align-items: center;
+  justify-content: space-between;
+  animation: fadeInDown 1s ease-in-out;
+}
+
+.data-pasien-header-components p {
+  font-size: 21px;
+  font-weight: 400;
+  color: var(--warna-tersier);
+}
+
+.data-pasien-header-components h5 {
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--warna-tersier);
+}
+
+.data-pasien-content {
+  /* HAPUS: flex-grow: 1; */ /* Ini penyebab tabel terlalu tinggi */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Tambahkan scroll jika konten meluap */
+  /* padding: 1.5rem; */
+  /* border: 1px solid #EAEAEA;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); */
+  animation: fadeInUp 1s ease-in-out;
+}
+
+.data-pasien-search-column {
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.data-pasien-search-column input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 2px solid var(--warna-primer);
+}
+
+.data-pasien-search-column input:first-child {
+  width: 25.4%;
+  border-radius: 50px;
+}
+
+.data-pasien-table {
+  overflow-x: auto; 
+}
+
+.data-pasien-table table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--warna-tersier);
+}
+
+.data-pasien-table th,
+.data-pasien-table td {
+  padding: 0.5rem 1rem;
+  text-align: left;
+  border: 1px solid #D1D2D3;
+}
+
+.data-pasien-table th {
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--warna-tersier);
+  text-align: center;
+}
+
+.data-pasien-table td {
+  font-size: 15px;
+}
+
+.data-pasien-table td:last-child {
+  text-align: center;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.btn-detail {
+  background: linear-gradient(to bottom right, var(--warna-primer-gradient), var(--warna-primer));
+  color: #FFFFFF;
+  border: none;
+  padding: 9px 29px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.btn-detail:hover {
+  transform: scale(1.05);
+}
+
+.data-pasien-footer {
+  padding-top: 2rem;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--warna-tersier);
+  flex-shrink: 0;
+  animation: fadeInDown 1s ease-in-out;
+}
+
+.data-pasien-footer span {
+  font-weight: 700;
+  color: var(--warna-primer);
+}
+
+.no-data-found {
+  text-align: center;
+  padding: 3rem 0;
+  font-weight: 500;
+  color: #D1D2D3; /* Warna abu-abu */
+}
+
+
+
+/* ------- Overlay Detail Pasien ------- */
+
+.overlay-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.overlay-container {
+  background-color: #FFFFFF;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.overlay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* border-bottom: 1px solid #EAEAEA; */
+  padding-bottom: 0.3rem;
+  margin-bottom: 1.5rem;
+}
+
+.overlay-header h2 {
+  font-size: 40px;
+  background: linear-gradient(to right, var(--warna-sekunder), var(--warna-primer));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 700;
+}
+
+.btn-close {
+  background: #D1D2D3;
+  border-radius: 50%;
+  padding: 5px;
+  padding-bottom: 0;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-close:hover {
+  transform: scale(1.1);
+}
+
+.btn-close img {
+  width: 20px;
+  height: 20px;
+}
+
+.overlay-content table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.overlay-content td {
+  padding: 12px 0;
+  border-bottom: 1px solid #EAEAEA;
+}
+
+.overlay-content td:first-child {
+  font-weight: 600;
+  color: #565656;
+  width: 40%;
+}
+
+.overlay-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.overlay-actions button {
+  padding: 15px 60px;
+  border-radius: 8px;
+  border: none;
+  color: #FFFFFF;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.overlay-actions button:hover {
+  opacity: 0.7;
+}
+
+.overlay-actions button img {
+  width: 20px;
+  margin-right: 10px;
+}
+
+.btn-delete {
+  background-color: #A40000;
+}
+
+.btn-edit {
+  background-color: var(--warna-primer);
+}
+
+
+
+/* ------- CSS Tambahan untuk Overlay Mode Edit ------- */
+
+.btn-back {
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-back:hover {
+  transform: scale(1.1);
+}
+
+.btn-back img {
+  width: 27px;
+  filter: invert(0.5); /* Membuat ikon panah jadi abu-abu */
+}
+
+.overlay-content.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-row label {
+  font-weight: 600;
+  color: #565656;
+}
+
+.form-row input,
+.form-row select {
+  width: 60%;
+  padding: 8px 12px;
+  border: 1px solid #D1D2D3;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.form-row input[readOnly] {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.btn-save {
+  width: 100%;
+  background-color: var(--warna-primer);
+  justify-content: center;
+}
+.btn-save img {
+  width: 20px;
+  margin-right: 10px;
+}
+
+
+
+/* ------- Overlay Konfirmasi ------- */
+
+.confirmation-container {
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px; /* Lebih kecil dari overlay utama */
+  text-align: center;
+  overflow: hidden; /* Untuk memastikan border-radius di tombol berfungsi */
+  z-index: 1100; /* Pastikan di atas overlay lain */
+}
+
+.confirmation-content {
+  padding: 2rem;
+}
+
+.confirmation-content h3 {
+  font-size: 24px;
+  background: linear-gradient(to right, var(--warna-sekunder), var(--warna-primer));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.confirmation-content p {
+  color: #565656;
+}
+
+.confirmation-actions {
+  display: flex;
+}
+
+.confirmation-actions button {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-cancel {
+  background-color: #f0f0f0;
+  color: #333;
+}
+.btn-cancel:hover {
+  background-color: #e0e0e0;
+}
+
+.btn-confirm {
+  background-color: var(--warna-primer);
+  color: #FFFFFF;
+}
+.btn-confirm:hover {
+  background-color: #2E6034; /* Versi lebih gelap dari warna primer */
+}
+
+.btn-confirm.btn-confirm-delete {
+  background-color: #A40000;
+}
+
+.btn-confirm.btn-confirm-delete:hover {
+  background-color: #830000; /* Versi lebih gelap dari warna merah */
+}
+
+
+
+/* ------- Data Dokter ------- */
+
+#data-dokter {
+  padding: 20px 30px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  color: var(--warna-tersier);
+}
+
+.data-dokter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-shrink: 0;
+}
+
+.data-dokter-header h1 {
+  font-size: 50px;
+  background: linear-gradient(to bottom right, var(--warna-sekunder), var(--warna-primer));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: fadeInLeft 1s ease-in-out;
+}
+
+.data-dokter-header-components {
+  display: flex;
+  width: 25%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  animation: fadeInDown 1s ease-in-out;
+}
+
+.data-dokter-header-components p {
+  font-size: 21px;
+  font-weight: 400;
+  color: var(--warna-tersier);
+}
+
+.data-dokter-header-components h5 {
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--warna-tersier);
+}
+
+.data-dokter-content {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.data-dokter-table {
+  overflow-x: auto;
+  margin-top: 1.5rem;
+}
+
+.data-dokter-table table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--warna-tersier);
+}
+
+.data-dokter-table th,
+.data-dokter-table td {
+  padding: 0.5rem 1rem;
+  text-align: left;
+  border: 1px solid #D1D2D3;
+}
+
+.data-dokter-table th {
+  font-weight: 600;
+  font-size: 17px;
+  text-align: center;
+}
+
+.data-dokter-table td {
+  font-size: 15px;
+}
+
+.data-dokter-table td:nth-child(1) {
+  text-align: center;
+}
+
+.data-dokter-table td:nth-child(5) {
+  text-align: center;
+  max-width: 190px;
+}
+
+.data-dokter-table td:last-child {
+  text-align: center;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.data-dokter-search-column {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.data-dokter-search-column input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 2px solid var(--warna-primer);
+  width: 19.6%;
+  border-radius: 50px;
+}
+
+.data-dokter-search-column button {
+  font-size: 15px;
+  font-weight: 400;
+  padding: 10px 30px;
+  background: var(--warna-primer);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 5px;
+  align-items: center;
+  display: flex;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.data-dokter-search-column button:hover {
+  opacity: 0.8;
+}
+
+.data-dokter-search-column button span {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.data-dokter-footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.data-dokter-footer {
+  padding-top: 2rem;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--warna-tersier);
+  flex-shrink: 0;
+  animation: fadeInDown 1s ease-in-out;
+}
+
+.data-dokter-footer span {
+  font-weight: 700;
+  color: var(--warna-primer);
+}
+
+
+
+/* ------- Overlay TAMBAH Dokter (prefix "ad-") ------- */
+
+.ad-overlay-container {
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  background-color: #FFFFFF;
+  padding: 1.3rem 2rem;
+  border-radius: 12px;
+  animation: fadeIn 0.3s ease;
+}
+
+.ad-overlay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  margin-bottom: 1rem;
+}
+
+.ad-overlay-header h2 {
+  font-size: 28px;
+  background: linear-gradient(to right, var(--warna-sekunder), var(--warna-primer));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.ad-btn-close {
+  background: #D1D2D3;
+  border-radius: 50%;
+  padding: 5px;
+  padding-bottom: 0;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.ad-btn-close:hover {
+  transform: scale(1.1);
+}
+
+.ad-btn-close img {
+  width: 20px;
+  height: 20px;
+}
+
+.ad-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  overflow-y: auto;
+  padding: 1.5rem 0;
+}
+
+.ad-upload-section {
+  margin-bottom: 1rem;
+}
+
+.ad-photo-placeholder {
+  width: 150px;
+  height: 200px;
+  background: linear-gradient(to bottom right, var(--warna-sekunder), var(--warna-primer));
+  border: 2px dashed #D1D2D3;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.ad-photo-placeholder > img {
+  width: 50px;
+}
+
+.ad-photo-placeholder .ad-photo-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.ad-form-row {
+  display: grid;
+  grid-template-columns: 1fr 2.5fr;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+  padding: 0 1.5rem;
+}
+
+.ad-form-row label {
+  font-weight: 500;
+  color: var(--warna-tersier);
+  text-align: left;
+}
+
+.ad-form-row input[type="text"],
+.ad-form-row input[type="date"],
+.ad-form-row select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #D1D2D3;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.ad-form-row.schedule {
+  align-items: flex-start;
+}
+
+.ad-schedule-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.ad-schedule-days {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ad-day-btn {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #D1D2D3;
+  background-color: #FFFFFF;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.ad-day-btn.active {
+  background-color: var(--warna-primer);
+  color: #FFFFFF;
+  border-color: var(--warna-primer);
+}
+
+.ad-schedule-time {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ad-schedule-time input {
+  width: 100%;
+  text-align: center;
+}
+
+.ad-schedule-time span {
+  font-weight: 600;
+  color: #D1D2D3;
+}
+
+.ad-form-row.status {
+  align-items: center;
+}
+
+.ad-status-options {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.ad-status-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 400;
+}
+
+.ad-status-options input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--warna-primer);
+}
+
+.ad-overlay-actions {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.ad-overlay-actions button {
+  padding: 15px 60px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 17px;
+  flex: 1;
+  justify-content: center;
+}
+
+.ad-overlay-actions button img {
+  width: 20px;
+  margin-right: 10px;
+}
+
+.ad-btn-cancel {
+  background-color: #D1D2D3;
+  color: var(--warna-tersier);
+}
+
+.ad-btn-cancel:hover {
+  opacity: 0.8;
+}
+
+.ad-btn-save {
+  background-color: var(--warna-primer);
+  color: #FFFFFF;
+}
+
+.ad-btn-save:hover {
+  opacity: 0.8;
+}
+
+
+/* ------- Overlay PROFIL & EDIT Dokter (prefix "dd-") ------- */
+
+.dd-overlay-container {
+  background-color: #FFFFFF;
+  padding: 1.3rem 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  animation: fadeIn 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+}
+
+.dd-view-header,
+.dd-edit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #EAEAEA;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
+}
+
+.dd-view-header h2,
+.dd-edit-header h2 {
+  font-size: 28px;
+  background: linear-gradient(to right, var(--warna-sekunder), var(--warna-primer));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 700;
+}
+
+.dd-btn-back {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: fit-content;
+  filter: invert(0.5);
+  transition: 0.3s;
+}
+
+.dd-btn-back:hover {
+  transform: scale(1.1);
+}
+
+.dd-btn-back img {
+  width: 37px;
+}
+
+.dd-btn-close {
+  background: #D1D2D3;
+  border-radius: 50%;
+  padding: 5px;
+  padding-bottom: 0;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.dd-btn-close:hover {
+  transform: scale(1.1);
+}
+
+.dd-btn-close img {
+  width: 20px;
+  height: 20px;
+}
+
+.dd-view-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.dd-profile-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border: 4px solid #FFFFFF;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.dd-doctor-name {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: var(--warna-tersier);
+}
+
+.dd-doctor-specialty {
+  color: #565656;
+  margin-bottom: 1.5rem;
+}
+
+.dd-info-table {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+.dd-info-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #EAEAEA;
+  font-size: 15px;
+}
+
+.dd-info-table tr:last-child td {
+  border-bottom: none;
+}
+
+.dd-info-table td:first-child {
+  font-weight: 600;
+  color: var(--warna-tersier);
+  width: 40%;
+}
+
+.dd-status.active {
+  color: var(--warna-primer);
+  font-weight: 600;
+}
+
+.dd-status.inactive {
+  color: #A40000;
+  font-weight: 600;
+}
+
+.dd-edit-content {
+  overflow-y: auto;
+  padding-right: 1rem;
+  margin-right: -1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-height: 500px;
+}
+
+.dd-edit-photo-section {
+  align-self: center;
+  margin-bottom: 1rem;
+}
+
+.dd-edit-photo-placeholder {
+  width: 150px;
+  height: 200px;
+  background: linear-gradient(to bottom right, var(--warna-sekunder), var(--warna-primer));
+  border: 2px dashed #D1D2D3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dd-edit-photo-placeholder img {
+  width: 40px;
+}
+
+.dd-edit-photo-placeholder .dd-edit-photo-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dd-edit-photo-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.dd-edit-form-row {
+  display: grid;
+  grid-template-columns: 1fr 2.5fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dd-edit-form-row label {
+  font-weight: 500;
+  color: var(--warna-tersier);
+  text-align: left;
+}
+
+.dd-edit-form-row input[type="text"],
+.dd-edit-form-row input[type="date"],
+.dd-edit-form-row select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #D1D2D3;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.dd-view-actions,
+.dd-edit-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-shrink: 0;
+}
+
+.dd-status-options {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.dd-status-options label {
+  display: flex;
+  align-items: center;
+}
+
+.dd-status-options label input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--warna-primer);
+  margin-right: 5px;
+}
+
+.dd-view-actions button,
+.dd-edit-actions button {
+  padding: 15px 27px;
+  border-radius: 8px;
+  border: none;
+  color: #FFFFFF;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  flex: 1;
+  justify-content: center;
+}
+
+.dd-view-actions button:hover,
+.dd-edit-actions button:hover {
+  opacity: 0.7;
+}
+
+.dd-btn-delete {
+  background-color: #A40000;
+}
+
+.dd-btn-delete img {
+  width: 17px;
+}
+
+.dd-btn-edit {
+  background-color: var(--warna-primer);
+}
+
+.dd-btn-edit img {
+  width: 17px;
+}
+
+.dd-btn-discard {
+  background-color: #D1D2D3;
+  color: var(--warna-tersier);
+}
+
+.dd-btn-save-changes {
+  background-color: var(--warna-primer);
+}
+
+.dd-btn-save-changes img {
+  width: 15px;
+}
+
+/* ------- Styling khusus untuk Jadwal Praktek di form Edit Dokter ------- */
+
+.dd-edit-form-row.schedule {
+  align-items: flex-start;
+}
+
+.dd-schedule-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.dd-schedule-days {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dd-day-btn {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #D1D2D3;
+  background-color: #FFFFFF;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.dd-day-btn.active {
+  background-color: var(--warna-primer);
+  color: #FFFFFF;
+  border-color: var(--warna-primer);
+}
+
+.dd-schedule-time {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dd-schedule-time input {
+  width: 100%;
+  text-align: center;
+  /* Properti ini diwarisi dari .dd-edit-form-row input */
+  padding: 10px 14px;
+  border: 1px solid #D1D2D3;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.dd-schedule-time span {
+  font-weight: 600;
+  color: #D1D2D3;
+}
+
+
+
+/* ------- Jadwal ------- */
+
+#jadwal-dokter {
+  width: 100%;
+  padding: 20px 30px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  color: var(--warna-tersier);
+}
+
+.jadwal-dokter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-shrink: 0;
+}
+
+.jadwal-dokter-header h1 {
+  font-size: 50px;
+  background: linear-gradient(to bottom right, var(--warna-sekunder), var(--warna-primer));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: fadeInLeft 1s ease-in-out;
+}
+
+.jadwal-dokter-header-components {
+  display: flex;
+  width: 25%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  animation: fadeInDown 1s ease-in-out;
+}
+
+.jadwal-dokter-header-components p {
+  font-size: 21px;
+  font-weight: 400;
+  color: var(--warna-tersier);
+}
+
+.jadwal-dokter-header-components h5 {
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--warna-tersier);
+}
+
+/* ------- Halaman JADWAL DOKTER (prefix "jd-") ------- */
+
+.jd-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.jd-filters {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.jd-search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.jd-search-bar img {
+  position: absolute;
+  left: 15px;
+  width: 16px;
+}
+
+.jd-search-bar input {
+  border: 1px solid var(--warna-primer);
+  border-radius: 50px;
+  padding: 10px 15px 10px 40px;
+  width: 255px;
+  color: var(--warna-tersier);
+}
+
+.jd-select, .jd-date-input {
+  border: 1px solid var(--warna-primer);
+  border-radius: 6px;
+  padding: 10px 15px;
+  color: var(--warna-tersier);
+}
+
+.jd-btn-today, .jd-btn-add {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  color: #FFFFFF;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.jd-btn-today {
+  background-color: var(--warna-sekunder);
+  color: var(--warna-tersier);
+}
+
+.jd-btn-add {
+  background-color: var(--warna-primer);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto; /* Mendorong tombol ke paling kanan */
+}
+
+.jd-btn-add span {
+  font-size: 20px;
+}
+
+.jd-btn-today:hover, .jd-btn-add:hover {
+  opacity: 0.85;
+}
+
+.jd-table-container {
+  overflow-x: auto;
+  border: 1px solid #D1D2D3;
+  border-radius: 8px;
+}
+
+.jd-table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.jd-table-container th, .jd-table-container td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #EAEAEA;
+  font-size: 15px;
+  white-space: nowrap; /* Mencegah teks turun baris */
+}
+
+.jd-table-container th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+}
+
+.jd-table-container th:last-child {
+  text-align: center;
+}
+
+.jd-table-container tr:last-child td {
+  border-bottom: none;
+  text-align: center;
+}
+
+.jd-table-container .status-hadir {
+  color: var(--warna-primer);
+  font-weight: 600;
+}
+
+.jd-table-container .status-berhalangan {
+  color: #A40000;
+  font-weight: 600;
+}
+
+.jd-table-container .status-menggantikan {
+  color: var(--warna-sekunder);
+  font-weight: 600;
+}
+
+.jd-aksi-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.jd-btn-aksi {
+  background: #D1D2D3;
+  border: 1px solid #565656;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.jd-btn-aksi img {
+  width: 16px;
+  height: 16px;
+}
+
+.jd-btn-aksi.delete:hover {
+  background-color: #A40000;
+  border-color: #A40000;
+}
+
+.jd-btn-aksi.edit:hover {
+  background-color: var(--warna-primer);
+  border-color: var(--warna-primer);
+}
+
+.jd-btn-aksi:hover img {
+  filter: brightness(0) invert(1);
+}
+
+.jadwal-dokter-footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.jadwal-dokter-footer {
+  padding-top: 2rem;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--warna-tersier);
+  flex-shrink: 0;
+  animation: fadeInDown 1s ease-in-out;
+}
+
+.jadwal-dokter-footer span {
+  font-weight: 700;
+  color: var(--warna-primer);
+}
+
+/* ------- Overlay TAMBAH JADWAL (prefix "js-") ------- */
+
+.js-overlay-container {
+  max-width: 600px;
+  background-color: #FFFFFF;
+  padding: 1.3rem 2rem;
+  border-radius: 12px;
+  animation: fadeIn 0.3s ease;
+}
+
+.js-overlay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.js-overlay-header h2 {
+  font-size: 28px;
+  background: linear-gradient(to right, var(--warna-sekunder), var(--warna-primer));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 700;
+}
+
+.js-btn-close {
+  background: #D1D2D3;
+  border-radius: 50%;
+  padding: 5px;
+  padding-bottom: 0;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.js-btn-close:hover {
+  transform: scale(1.1);
+}
+
+.js-btn-close img {
+  width: 20px;
+}
+
+.js-overlay-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.js-form-row {
+  display: grid;
+  grid-template-columns: 1fr 2.5fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+.js-form-row label {
+  font-weight: 500;
+  color: #565656;
+}
+
+.js-form-row input, .js-form-row select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #D1D2D3;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.js-form-row input[readOnly] {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.js-overlay-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #EAEAEA;
+}
+
+.js-overlay-actions button {
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+}
+
+.js-btn-cancel {
+  background-color: #D1D2D3;
+  color: var(--warna-tersier);
+}
+
+.js-btn-save {
+  background-color: var(--warna-primer);
+  color: #FFFFFF;
+}
+
+.js-btn-save img {
+  width: 16px;
+}
+
+
+
 /* ------- Logout ------- */
 
 #logout {

@@ -1,0 +1,134 @@
+#bukti-pendaftaran {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--warna-tersier);
+    padding: 25px 0;
+    background-color: #f8f9fa; /* Latar belakang halaman */
+}
+
+/* Container utama untuk area yang bisa di-download */
+.bukti-pendaftaran-download {
+    width: 90%;
+    max-width: 800px;
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    border: 3px solid var(--warna-sekunder);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+.bukti-pendaftaran-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.check-icon {
+    width: 80px;
+    margin-bottom: 1rem;
+}
+
+.bukti-pendaftaran-content h1 {
+    font-size: 42px;
+    color: var(--warna-primer);
+    margin-bottom: 2rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Tabel untuk detail pendaftaran */
+.registration-details {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+}
+
+.registration-details td {
+    padding: 15px 0;
+    padding-right: 7px;
+    border-bottom: 1px solid #EAEAEA;
+    font-size: 16px;
+}
+
+.registration-details tr:last-child td {
+    border-bottom: none;
+}
+
+.registration-details td:first-child {
+    font-weight: 600;
+    color: var(--warna-tersier);
+    width: 40%;
+}
+
+/* Bagian catatan penting di bawah */
+.notes-section {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.notes-section ul {
+    list-style-position: inside;
+    padding-left: 0;
+    font-size: 14px;
+    color: #565656;
+}
+
+.notes-section li {
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+.notes-section li.warning {
+    color: #A40000;
+}
+
+/* Gaya untuk tombol */
+.bukti-pendaftaran-button-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.7rem;
+}
+
+.bukti-pendaftaran-button-content button {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: none;
+    background: linear-gradient(
+        to bottom right,
+        var(--warna-sekunder-gradient),
+        var(--warna-sekunder)
+    );
+    border-radius: 10px;
+    color: var(--warna-tersier);
+    padding: 15px 40px;
+    font-size: 17px;
+    font-weight: 600;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.bukti-pendaftaran-button-content button img {
+    width: 19px;
+}
+
+.bukti-pendaftaran-button-content button:hover {
+    transform: scale(1.1);
+}
+
+.bukti-pendaftaran-button-content p {
+    font-size: 17px;
+    color: #565656;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.bukti-pendaftaran-button-content p:hover {
+    transform: scale(1.1);
+}
