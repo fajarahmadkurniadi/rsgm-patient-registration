@@ -3,18 +3,21 @@ import closeIcon from '../../assets/Navbar/Close X Button.webp';
 import saveIcon from '../../assets/Icon/Simpan Data.webp';
 import cameraIcon from '../../assets/Icon/add photo.webp';
 
-// Fungsi konversi tanggal yang salah SUDAH DIHAPUS dari sini
+// Helper function untuk mengubah format tanggal YYYY-MM-DD ke DD/MM/YYYY
+const formatDateForStorage = (dateStr) => {
+  if (!dateStr || !String(dateStr).includes('-')) return dateStr;
+  const [year, month, day] = dateStr.split('-');
+  return `${day}/${month}/${year}`;
+};
 
 const AddDoctorOverlay = ({ onClose, onAddDoctor }) => {
-  // useRef untuk mengakses input file yang tersembunyi
   const fileInputRef = useRef(null);
 
-  // State untuk menampung semua data dari form
   const [newDoctorData, setNewDoctorData] = useState({
     nama: '',
     spesialis: '',
     nip: '',
-    tanggal_lahir: '', // Akan tetap dalam format YYYY-MM-DD
+    tanggal_lahir: '',
     jadwal_hari: [],
     jadwal_awal: '',
     jadwal_akhir: '',
@@ -22,19 +25,16 @@ const AddDoctorOverlay = ({ onClose, onAddDoctor }) => {
     no_hp: '',
     alamat: '',
     status: 'Aktif',
-    foto: null, // Akan menyimpan objek File gambar
+    foto: null,
   });
   
-  // State khusus untuk menampilkan URL preview gambar
   const [photoPreview, setPhotoPreview] = useState(null);
 
-  // Handler untuk semua input teks, select, dan radio
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewDoctorData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Handler untuk memilih atau membatalkan pilihan hari
   const handleDayToggle = (day) => {
     setNewDoctorData(prev => {
       const newDays = prev.jadwal_hari.includes(day)
@@ -44,12 +44,10 @@ const AddDoctorOverlay = ({ onClose, onAddDoctor }) => {
     });
   };
 
-  // Handler saat area foto diklik untuk memicu input file
   const handlePhotoClick = () => {
     fileInputRef.current.click();
   };
 
-  // Handler saat pengguna memilih file gambar
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -58,9 +56,7 @@ const AddDoctorOverlay = ({ onClose, onAddDoctor }) => {
     }
   };
 
-  // Handler saat tombol 'Simpan' diklik
   const handleSave = () => {
-    // --- VALIDASI FORM ---
     const requiredFields = ['nama', 'spesialis', 'nip', 'tanggal_lahir', 'no_str', 'no_hp', 'alamat'];
     for (const field of requiredFields) {
       if (!newDoctorData[field]) {
@@ -72,17 +68,25 @@ const AddDoctorOverlay = ({ onClose, onAddDoctor }) => {
       alert('Harap isi semua form terlebih dahulu!');
       return;
     }
-    // --- VALIDASI SELESAI ---
 
     const jadwalString = `${newDoctorData.jadwal_hari.join(', ')} (${newDoctorData.jadwal_awal} - ${newDoctorData.jadwal_akhir})`;
     
-    // **BAGIAN YANG DIPERBAIKI**
-    // Langsung gunakan newDoctorData karena format tanggal_lahir sudah benar (YYYY-MM-DD)
+    // --- PERBAIKAN UTAMA DI SINI ---
+    // Membuat objek data yang "bersih" yang hanya berisi field yang dibutuhkan oleh database
     const finalData = { 
-      ...newDoctorData, 
+      nama: newDoctorData.nama,
+      spesialis: newDoctorData.spesialis,
+      nip: newDoctorData.nip,
+      tanggal_lahir: formatDateForStorage(newDoctorData.tanggal_lahir),
       jadwal: jadwalString,
+      no_str: newDoctorData.no_str,
+      no_hp: newDoctorData.no_hp,
+      alamat: newDoctorData.alamat,
+      status: newDoctorData.status,
+      foto: newDoctorData.foto,
     };
     
+    // Mengirim data yang sudah bersih ke parent component (DataDokter.jsx)
     onAddDoctor(finalData);
   };
 

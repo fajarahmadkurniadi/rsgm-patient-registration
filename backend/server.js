@@ -13,11 +13,11 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-const uploadsDir = './uploads';
+const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)){
     fs.mkdirSync(uploadsDir);
 }
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(uploadsDir));
 
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
@@ -42,9 +42,19 @@ db.connect(err => {
   console.log('Successfully connected to the MySQL database.');
 });
 
-// **BAGIAN YANG DIPERBAIKI: Konfigurasi Multer**
-// Kita pindahkan konfigurasi 'filename' ke dalam fungsi upload itu sendiri
-// agar kita bisa mengakses req.body
+// Helper untuk mengubah tanggal DD/MM/YYYY ke format YYYY-MM-DD
+const toMySQLDate = (dateStr) => {
+    if (!dateStr || typeof dateStr !== 'string') return null;
+    if (dateStr.includes('-')) {
+        return dateStr;
+    }
+    const parts = dateStr.split('/');
+    if (parts.length === 3) {
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+    return null;
+};
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -54,7 +64,6 @@ const storage = multer.diskStorage({
 const upload = multer({ 
   storage: storage,
   fileFilter: (req, file, cb) => {
-    // Menambahkan filter untuk hanya menerima file gambar
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
@@ -77,8 +86,7 @@ const poliCodeMapping = {
     "Gigi Geriatri": "GT", "Bedah Mulut dan Maksilofasial": "BM"
 };
 
-// ... (Endpoint pendaftaran & pesan tidak berubah) ...
-// Endpoint Pendaftaran (Tidak berubah)
+// Endpoint Pendaftaran (Tidak ada perubahan)
 app.post('/api/pendaftaran', (req, res) => {
   const { nik, namaLengkap, jenisKelamin, tanggalLahir, alamat, noHandphone, poli, hariTujuan, jamTujuan, keluhan } = req.body;
   const hariPemeriksaan = new Date(hariTujuan + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long' });
@@ -141,7 +149,7 @@ app.post('/api/pendaftaran', (req, res) => {
   });
 });
 
-// Endpoint Pesan (Tidak berubah)
+// Endpoint Pesan (Tidak ada perubahan)
 app.post('/api/pesan', (req, res) => {
     const { nama, email, pesan } = req.body;
     const tanggal = new Date().toISOString().split('T')[0];
@@ -157,24 +165,20 @@ app.post('/api/pesan', (req, res) => {
     });
 });
 
-
 // =============================
 // === API CRUD UNTUK DOKTER ===
 // =============================
 
 app.get('/api/dokter', (req, res) => { 
-    db.query('SELECT * FROM dokter ORDER BY id DESC', (err, results) => { 
+    db.query('SELECT *, DATE_FORMAT(tanggal_lahir, "%d/%m/%Y") as tanggal_lahir FROM dokter ORDER BY id DESC', (err, results) => { 
         if (err) res.status(500).json({ message: "Database error", error: err });
         else res.json(results); 
     }); 
 });
 
-// **POST: DIPERBAIKI**
 app.post('/api/dokter', upload.single('foto'), (req, res) => {
-    const newDoctorData = req.body;
-    const { nip } = newDoctorData;
+    const { nip } = req.body;
 
-    // Cek dulu apakah NIP sudah ada
     db.query('SELECT id FROM dokter WHERE nip = ?', [nip], (err, results) => {
       if (err) {
         console.error("Database error saat cek NIP:", err);
@@ -184,63 +188,104 @@ app.post('/api/dokter', upload.single('foto'), (req, res) => {
         return res.status(409).json({ message: `Dokter dengan NIP ${nip} sudah terdaftar.` });
       }
 
-      // Jika ada file yang diunggah, proses namanya
+      const dataToInsert = {
+        nama: req.body.nama,
+        spesialis: req.body.spesialis,
+        nip: req.body.nip,
+        tanggal_lahir: toMySQLDate(req.body.tanggal_lahir),
+        jadwal: req.body.jadwal,
+        no_str: req.body.no_str,
+        no_hp: req.body.no_hp,
+        alamat: req.body.alamat,
+        status: req.body.status,
+      };
+      
+      let fotoPath = null;
       if (req.file) {
           const oldPath = req.file.path;
           const newFileName = `${nip}-${Date.now()}${path.extname(req.file.originalname)}`;
-          const newPath = path.join(uploadsDir, newFileName);
-          
-          // Rename file agar sesuai dengan NIP
-          fs.renameSync(oldPath, newPath);
-          newDoctorData.foto = `uploads/${newFileName}`;
+          fotoPath = path.join(uploadsDir, newFileName);
+          fs.renameSync(oldPath, fotoPath);
+          dataToInsert.foto = `uploads/${newFileName}`;
       }
 
-      db.query('INSERT INTO dokter SET ?', newDoctorData, (err, result) => {
+      db.query('INSERT INTO dokter SET ?', dataToInsert, (err, result) => {
           if (err) {
               console.error("Gagal menambah dokter:", err);
-              // Hapus file yang sudah terunggah jika insert database gagal
-              if (req.file) fs.unlinkSync(newDoctorData.foto);
-              return res.status(500).json({ message: "Gagal menyimpan data ke database." });
+              if (fotoPath) fs.unlinkSync(fotoPath);
+              return res.status(500).json({ message: "Gagal menyimpan data ke database.", error: err.sqlMessage });
           }
-          res.status(201).json({ id: result.insertId, ...newDoctorData });
+          res.status(201).json({ id: result.insertId, ...dataToInsert });
       });
     });
 });
 
-
-// **PUT: DIPERBAIKI**
 app.put('/api/dokter/:id', upload.single('foto'), (req, res) => {
     const { id } = req.params;
-    const updatedDoctorData = req.body;
-    const { nip } = updatedDoctorData;
+    const { nip } = req.body;
 
-    if (req.file) {
-        const oldPath = req.file.path;
-        const newFileName = `${nip}-${Date.now()}${path.extname(req.file.originalname)}`;
-        const newPath = path.join(uploadsDir, newFileName);
-        fs.renameSync(oldPath, newPath);
-        updatedDoctorData.foto = `uploads/${newFileName}`;
-    }
+    db.query('SELECT foto FROM dokter WHERE id = ?', [id], (err, results) => {
+        if (err) return res.status(500).json({ message: "Gagal mengambil data lama." });
 
-    db.query('UPDATE dokter SET ? WHERE id = ?', [updatedDoctorData, id], (err) => {
-        if (err) {
-            console.error("Gagal memperbarui dokter:", err);
-            return res.status(500).json({ message: "Gagal memperbarui data di database." });
+        const oldFotoPath = results[0]?.foto ? path.join(__dirname, results[0].foto) : null;
+        
+        const dataToUpdate = {
+            nama: req.body.nama,
+            spesialis: req.body.spesialis,
+            nip: req.body.nip,
+            tanggal_lahir: toMySQLDate(req.body.tanggal_lahir),
+            jadwal: req.body.jadwal,
+            no_str: req.body.no_str,
+            no_hp: req.body.no_hp,
+            alamat: req.body.alamat,
+            status: req.body.status,
+        };
+
+        if (req.file) {
+            const oldPath = req.file.path;
+            const newFileName = `${nip}-${Date.now()}${path.extname(req.file.originalname)}`;
+            const newPath = path.join(uploadsDir, newFileName);
+            fs.renameSync(oldPath, newPath);
+            dataToUpdate.foto = `uploads/${newFileName}`;
+
+            if (oldFotoPath && fs.existsSync(oldFotoPath)) {
+                fs.unlinkSync(oldFotoPath);
+            }
         }
-        res.status(200).json({ message: "Data dokter berhasil diperbarui." });
+
+        db.query('UPDATE dokter SET ? WHERE id = ?', [dataToUpdate, id], (err) => {
+            if (err) {
+                console.error("Gagal memperbarui dokter:", err);
+                return res.status(500).json({ message: "Gagal memperbarui data di database.", error: err.sqlMessage });
+            }
+            res.status(200).json({ message: "Data dokter berhasil diperbarui." });
+        });
     });
 });
 
+
 app.delete('/api/dokter/:id', (req, res) => { 
     const { id } = req.params; 
-    db.query('DELETE FROM dokter WHERE id = ?', id, (err) => { 
-        if (err) return res.status(500).json({ message: 'Gagal menghapus data dari database.' });
-        res.status(200).json({ message: 'Data dokter berhasil dihapus.' });
-    }); 
+    
+    db.query('SELECT foto FROM dokter WHERE id = ?', [id], (err, results) => {
+        if (err) return res.status(500).json({ message: "Gagal mengambil data untuk dihapus." });
+        
+        db.query('DELETE FROM dokter WHERE id = ?', id, (err) => { 
+            if (err) return res.status(500).json({ message: 'Gagal menghapus data dari database.' });
+
+            if (results.length > 0 && results[0].foto) {
+                const fotoPath = path.join(__dirname, results[0].foto);
+                if (fs.existsSync(fotoPath)) {
+                    fs.unlinkSync(fotoPath);
+                }
+            }
+            res.status(200).json({ message: 'Data dokter berhasil dihapus.' });
+        }); 
+    });
 });
 
+// --- Sisa Endpoint Lainnya (Tidak Berubah) ---
 
-// ... (Sisa API lainnya tidak berubah) ...
 app.get('/api/pasien', (req, res) => {
     const query = 'SELECT *, DATE_FORMAT(tanggal_lahir, "%d/%m/%Y") as tanggal_lahir_formatted, DATE_FORMAT(tanggal_pendaftaran, "%d/%m/%Y") as tanggal_daftar_formatted FROM pasien';
     db.query(query, (err, results) => {
@@ -266,7 +311,6 @@ app.get('/api/riwayat', (req, res) => {
 
 app.get('/api/pesan', (req, res) => { db.query('SELECT *, DATE_FORMAT(tanggal, "%d/%m/%Y") as tanggal_formatted FROM pesan ORDER BY id DESC', (err, results) => { if (err) res.status(500).send(err); else { const formatted = results.map(m => ({...m, tanggal: m.tanggal_formatted})); res.json(formatted); } }); });
 
-// --- API UNTUK DASHBOARD ---
 app.get('/api/dashboard/stats', (req, res) => {
   const today = new Date().toISOString().slice(0, 10);
   const currentMonth = new Date().getMonth() + 1;
