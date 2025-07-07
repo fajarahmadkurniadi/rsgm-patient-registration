@@ -1,47 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import closeIcon from '../../assets/Navbar/Close X Button.webp';
+import React, { useState } from 'react';
 import saveIcon from '../../assets/Icon/Simpan Data.webp';
 
 const EditScheduleOverlay = ({ schedule, onClose, onUpdateSchedule }) => {
-  const [editedSchedule, setEditedSchedule] = useState({ ...schedule });
-  const [scheduleParts, setScheduleParts] = useState({ days: [], start: '', end: '' });
+  // Inisialisasi state dengan data jadwal yang akan diedit
+  const [editedSchedule, setEditedSchedule] = useState({
+    id: schedule.id,
+    status: schedule.status,
+    jam_mulai: schedule.jam_mulai,
+    jam_selesai: schedule.jam_selesai,
+  });
 
-  // Efek untuk mem-parse jadwal saat komponen dimuat
-  useEffect(() => {
-    const scheduleRegex = /([\w\s,&-]+)\s*\((\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})\)/;
-    const match = schedule.jadwal.match(scheduleRegex);
-    if (match) {
-      const daysRaw = match[1].replace(/&/g, ',').replace(/-/g, ',');
-      const daysArray = daysRaw.split(',').map(d => d.trim()).filter(Boolean);
-      setScheduleParts({ days: daysArray, start: match[2], end: match[3] });
-    }
-  }, [schedule.jadwal]);
-
+  // Handler untuk setiap perubahan pada form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'start' || name === 'end') {
-      setScheduleParts(prev => ({ ...prev, [name]: value }));
-    } else {
-      setEditedSchedule(prev => ({ ...prev, [name]: value }));
-    }
+    setEditedSchedule((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleDayToggle = (day) => {
-    setScheduleParts(prev => {
-      const newDays = prev.days.includes(day)
-        ? prev.days.filter(d => d !== day)
-        : [...prev.days, day];
-      return { ...prev, days: newDays };
-    });
-  };
-
+  // Handler saat tombol simpan diklik
   const handleSave = () => {
-    const jadwalString = `${scheduleParts.days.join(', ')} (${scheduleParts.start} - ${scheduleParts.end})`;
-    const finalData = { ...editedSchedule, jadwal: jadwalString };
-    onUpdateSchedule(finalData);
+    onUpdateSchedule(editedSchedule);
   };
-
-  const daysOfWeek = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
   return (
     <div className="overlay-backdrop" onClick={onClose}>
@@ -50,26 +28,24 @@ const EditScheduleOverlay = ({ schedule, onClose, onUpdateSchedule }) => {
           <h2>Edit Jadwal</h2>
         </div>
         <div className="es-overlay-content">
+          {/* Form dinonaktifkan karena nama dan tanggal tidak seharusnya diubah */}
           <div className="es-form-row">
             <label>Nama Dokter</label>
-            <input type="text" value={editedSchedule.nama} readOnly />
+            <input type="text" value={schedule.nama} readOnly />
           </div>
           <div className="es-form-row">
-            <label>Jadwal Praktek</label>
-            <div className="es-schedule-inputs">
-              <div className="es-schedule-days">
-                {daysOfWeek.map(day => (
-                  <button key={day} type="button" className={`es-day-btn ${scheduleParts.days.includes(day) ? 'active' : ''}`} onClick={() => handleDayToggle(day)}>
-                    {day}
-                  </button>
-                ))}
-              </div>
-              <div className="es-schedule-time">
-                <input type="time" name="start" value={scheduleParts.start} onChange={handleInputChange} />
-                <span>—</span>
-                <input type="time" name="end" value={scheduleParts.end} onChange={handleInputChange} />
-              </div>
-            </div>
+            <label>Hari/Tanggal</label>
+            <input type="text" value={new Date(schedule.tanggal).toLocaleDateString('id-ID', { dateStyle: 'full' })} readOnly />
+          </div>
+
+          {/* Form yang bisa diubah */}
+          <div className="es-form-row">
+            <label>Jam Mulai</label>
+            <input type="time" name="jam_mulai" value={editedSchedule.jam_mulai} onChange={handleInputChange} />
+          </div>
+          <div className="es-form-row">
+            <label>Jam Selesai</label>
+            <input type="time" name="jam_selesai" value={editedSchedule.jam_selesai} onChange={handleInputChange} />
           </div>
           <div className="es-form-row">
             <label>Status</label>
@@ -81,9 +57,11 @@ const EditScheduleOverlay = ({ schedule, onClose, onUpdateSchedule }) => {
           </div>
         </div>
         <div className="es-overlay-actions">
-          <button className="es-btn-cancel" onClick={onClose}>Batal</button>
+          <button className="es-btn-cancel" onClick={onClose}>
+            Batal
+          </button>
           <button className="es-btn-save" onClick={handleSave}>
-            <img src={saveIcon} alt="Simpan"/> Simpan Perubahan
+            <img src={saveIcon} alt="Simpan" /> Simpan Perubahan
           </button>
         </div>
       </div>

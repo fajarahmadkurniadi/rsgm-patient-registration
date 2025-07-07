@@ -1,26 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import closeIcon from '../../assets/Navbar/Close X Button.webp';
 import saveIcon from '../../assets/Icon/Simpan Data.webp';
 
-const AddScheduleOverlay = ({ onClose, onAddSchedule, doctorList }) => {
+const AddScheduleOverlay = ({ onClose, onAddSchedule, doctorList, initialDate }) => {
   const [selectedDoctorId, setSelectedDoctorId] = useState('');
   const [scheduleData, setScheduleData] = useState({
-    hari_tanggal: '',
+    tanggal: initialDate || '',
     jam_mulai: '',
     jam_selesai: '',
     status: 'Hadir',
   });
   const [selectedDoctorInfo, setSelectedDoctorInfo] = useState({
     nip: '',
-    spesialis: ''
+    spesialis: '',
   });
 
-  // Efek untuk auto-fill NIP dan Spesialis saat dokter dipilih
   useEffect(() => {
     if (selectedDoctorId) {
-      const doctor = doctorList.find(d => d.id.toString() === selectedDoctorId);
+      const doctor = doctorList.find((d) => d.id.toString() === selectedDoctorId);
       if (doctor) {
         setSelectedDoctorInfo({ nip: doctor.nip, spesialis: doctor.spesialis });
+        // Ekstrak jam dari jadwal utama dokter
+        const jadwalMatch = doctor.jadwal.match(/\((.*?)\)/);
+        const jam = jadwalMatch ? jadwalMatch[1].split('-') : ['', ''];
+        setScheduleData((prev) => ({ ...prev, jam_mulai: jam[0]?.trim(), jam_selesai: jam[1]?.trim() }));
       }
     } else {
       setSelectedDoctorInfo({ nip: '', spesialis: '' });
@@ -29,34 +31,24 @@ const AddScheduleOverlay = ({ onClose, onAddSchedule, doctorList }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setScheduleData(prev => ({ ...prev, [name]: value }));
+    setScheduleData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleDoctorChange = (e) => {
     setSelectedDoctorId(e.target.value);
   };
-  
-  const getDayName = (dateStr) => {
-      if (!dateStr) return '';
-      const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-      return days[new Date(dateStr + 'T00:00:00').getDay()];
-  };
 
   const handleSave = () => {
-    if (!selectedDoctorId || !scheduleData.hari_tanggal || !scheduleData.jam_mulai || !scheduleData.jam_selesai) {
-      alert("Harap lengkapi semua data jadwal.");
+    if (!selectedDoctorId || !scheduleData.tanggal || !scheduleData.jam_mulai || !scheduleData.jam_selesai) {
+      alert('Harap lengkapi semua data jadwal.');
       return;
     }
-    const doctor = doctorList.find(d => d.id.toString() === selectedDoctorId);
-    
-    // Buat objek jadwal baru dengan format yang benar
+
     const newSchedule = {
-      id: Date.now(), // ID unik untuk jadwal baru
-      nama: doctor.nama,
-      nip: doctor.nip,
-      spesialis: doctor.spesialis,
-      // BUAT JADWAL STRING YANG SESUAI DENGAN FILTER
-      jadwal: `${getDayName(scheduleData.hari_tanggal)} (${scheduleData.jam_mulai} - ${scheduleData.jam_selesai})`,
+      dokter_id: parseInt(selectedDoctorId, 10),
+      tanggal: scheduleData.tanggal,
+      jam_mulai: scheduleData.jam_mulai,
+      jam_selesai: scheduleData.jam_selesai,
       status: scheduleData.status,
     };
     onAddSchedule(newSchedule);
@@ -73,8 +65,10 @@ const AddScheduleOverlay = ({ onClose, onAddSchedule, doctorList }) => {
             <label>Nama Dokter</label>
             <select value={selectedDoctorId} onChange={handleDoctorChange}>
               <option value="">Pilih Dokter</option>
-              {doctorList.map(doc => (
-                <option key={doc.id} value={doc.id}>{doc.nama}</option>
+              {doctorList.map((doc) => (
+                <option key={doc.id} value={doc.id}>
+                  {doc.nama}
+                </option>
               ))}
             </select>
           </div>
@@ -88,7 +82,7 @@ const AddScheduleOverlay = ({ onClose, onAddSchedule, doctorList }) => {
           </div>
           <div className="js-form-row">
             <label>Hari/Tanggal</label>
-            <input type="date" name="hari_tanggal" value={scheduleData.hari_tanggal} onChange={handleInputChange} />
+            <input type="date" name="tanggal" value={scheduleData.tanggal} onChange={handleInputChange} />
           </div>
           <div className="js-form-row">
             <label>Jam Mulai</label>
@@ -108,9 +102,11 @@ const AddScheduleOverlay = ({ onClose, onAddSchedule, doctorList }) => {
           </div>
         </div>
         <div className="js-overlay-actions">
-          <button className="js-btn-cancel" onClick={onClose}>Batal</button>
+          <button className="js-btn-cancel" onClick={onClose}>
+            Batal
+          </button>
           <button className="js-btn-save" onClick={handleSave}>
-            <img src={saveIcon} alt="Simpan"/> Simpan
+            <img src={saveIcon} alt="Simpan" /> Simpan
           </button>
         </div>
       </div>
