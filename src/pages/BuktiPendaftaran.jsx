@@ -30,16 +30,16 @@ const BuktiPendaftaran = () => {
     // Ref untuk menunjuk ke elemen yang akan di-screenshot
     const downloadAreaRef = useRef(null);
     
-    // Data yang akan ditampilkan, mengambil dari formData atau fallback ke data dummy
+    // Data yang akan ditampilkan, mengambil dari formData atau fallback
     const registrationData = {
         namaPasien: formData?.namaLengkap || 'Data Tidak Ditemukan',
         nik: formData?.nik || 'Data Tidak Ditemukan',
-        noRekamMedis: '100076', // Contoh No. RM
-        nomorAntrian: 'OR-001', // Contoh No. Antrian
+        noRekamMedis: formData?.noRekamMedis || 'Data Tidak Ditemukan',
+        nomorAntrian: formData?.nomorAntrian || 'Data Tidak Ditemukan',
         hariTanggalDaftar: new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
         jamDaftar: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
         poliTujuan: formData?.poli || 'Data Tidak Ditemukan',
-        namaDokter: 'drg. Siti Nazifah, Sp. Ort., Subsp. OD (K)', // Contoh Nama Dokter
+        namaDokter: formData?.namaDokter || 'Data Tidak Ditemukan',
         tanggalPemeriksaan: formatDisplayDate(formData?.hariTujuan),
         jamPemeriksaan: formData?.jamTujuan || 'Data Tidak Ditemukan',
         keluhan: formData?.keluhan || 'Data Tidak Ditemukan'
@@ -48,8 +48,10 @@ const BuktiPendaftaran = () => {
     // Fungsi untuk membuat dan mengunduh PDF
     const generatePdf = () => {
         const input = downloadAreaRef.current;
+        if (!input) return; // Tambahkan pengecekan jika ref belum siap
+
         html2canvas(input, { 
-            scale: 2, // Skala 2 untuk kualitas gambar yang lebih baik
+            scale: 2, 
             useCORS: true 
         }).then((canvas) => {
             const imgData = canvas.toDataURL('image/png');
@@ -57,7 +59,7 @@ const BuktiPendaftaran = () => {
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
             pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`bukti-pendaftaran-${registrationData.namaPasien}.pdf`);
+            pdf.save(`bukti-pendaftaran-${registrationData.namaPasien.replace(/\s/g, '-')}.pdf`);
         });
     };
 
@@ -65,9 +67,24 @@ const BuktiPendaftaran = () => {
     useEffect(() => {
         // Cek jika ada data form, baru jalankan download
         if (formData) {
-            generatePdf();
+            // Beri sedikit jeda agar komponen sempat render sebelum di-screenshot
+            const timer = setTimeout(() => {
+                generatePdf();
+            }, 500);
+            return () => clearTimeout(timer);
         }
     }, [formData]); // Array dependensi untuk memastikan useEffect berjalan jika formData ada
+
+    // Jika tidak ada data, tampilkan pesan dan arahkan kembali
+    if (!formData) {
+        return (
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+                <h1>Data Pendaftaran Tidak Ditemukan</h1>
+                <p>Silakan kembali ke beranda dan lakukan pendaftaran terlebih dahulu.</p>
+                <button onClick={() => navigate('/')} style={{ marginTop: '1rem' }}>Kembali ke Beranda</button>
+            </div>
+        );
+    }
 
     return (
         <>

@@ -55,9 +55,17 @@ const toMySQLDate = (dateStr) => {
     return null;
 };
 
+// ==========================================================
+// === PERBAIKAN UTAMA: Gunakan singkatan hari yang benar ===
+// ==========================================================
 const dayMapping = {
-    0: 'Ming', 1: 'Sen', 2: 'Sel', 3: 'Rab',
-    4: 'Kam', 5: 'Jum', 6: 'Sab'
+    0: 'Minggu', // Minggu tidak dipakai, tapi dijaga untuk konsistensi index
+    1: 'Sen',
+    2: 'Sel',
+    3: 'Rab',
+    4: 'Kam',
+    5: 'Jum',
+    6: 'Sab'
 };
 
 const storage = multer.diskStorage({
@@ -91,98 +99,107 @@ const poliCodeMapping = {
     "Gigi Geriatri": "GT", "Bedah Mulut dan Maksilofasial": "BM"
 };
 
-// Endpoint Pendaftaran (Dengan Perbaikan)
 app.post('/api/pendaftaran', (req, res) => {
-  const { nik, namaLengkap, jenisKelamin, tanggalLahir, alamat, noHandphone, poli, hariTujuan, jamTujuan, keluhan } = req.body;
-  
-  if (!hariTujuan) {
-      return res.status(400).json({ message: 'Tanggal tujuan pendaftaran tidak boleh kosong.' });
-  }
+    const { nik, namaLengkap, jenisKelamin, tanggalLahir, alamat, noHandphone, poli, hariTujuan, jamTujuan, keluhan } = req.body;
 
-  const dateObject = new Date(hariTujuan + 'T00:00:00');
-  const dayIndex = dateObject.getDay();
-  const hariSingkat = dayMapping[dayIndex];
+    if (!hariTujuan || !poli) {
+        return res.status(400).json({ message: 'Informasi poli dan tanggal tujuan tidak boleh kosong.' });
+    }
 
-  if (!hariSingkat) {
-    return res.status(400).json({ message: 'Tanggal tujuan tidak valid.' });
-  }
+    db.beginTransaction(err => {
+        if (err) {
+            console.error("Gagal memulai transaksi:", err);
+            return res.status(500).json({ message: 'Kesalahan pada server.' });
+        }
 
-  const queryCariDokter = "SELECT * FROM dokter WHERE spesialis = ? AND jadwal LIKE ? AND status = 'Aktif' LIMIT 1";
-  
-  db.query(queryCariDokter, [poli, `%${hariSingkat}%`], (err, dokterResults) => {
-    if (err) return res.status(500).json({ message: 'Database error saat mencari dokter.', error: err });
-    
-    if (dokterResults.length === 0) return res.status(404).json({ message: `Tidak ada dokter yang tersedia untuk poli ${poli} pada hari ${dateObject.toLocaleDateString('id-ID', { weekday: 'long' })}.` });
-    
-    const assignedDoctor = dokterResults[0];
+        const dateObject = new Date(hariTujuan + 'T00:00:00');
+        const dayIndex = dateObject.getDay();
+        const hariSingkat = dayMapping[dayIndex]; // Ini akan menghasilkan 'Sen', 'Sel', dst.
 
-    db.query('SELECT * FROM pasien WHERE nik = ?', [nik], (err, pasienResults) => {
-      if (err) return res.status(500).json({ message: 'Database error saat cek NIK.', error: err });
+        const queryCariDokter = "SELECT * FROM dokter WHERE spesialis = ? AND jadwal LIKE ? AND status = 'Aktif' LIMIT 1";
 
-      const proceedToRegister = (pasienId, noRekamMedis, statusPasien) => {
-        const poliCode = poliCodeMapping[poli] || 'XX';
-        const queryAntrian = 'SELECT COUNT(*) as count FROM pendaftaran WHERE poli_tujuan = ? AND tanggal_pendaftaran = ?';
-        
-        db.query(queryAntrian, [poli, hariTujuan], (err, antrianResult) => {
-          if (err) return res.status(500).json({ message: 'Gagal menghitung antrian.', error: err });
+        db.query(queryCariDokter, [poli, `%${hariSingkat}%`], (err, dokterResults) => {
+            if (err) {
+                return db.rollback(() => res.status(500).json({ message: 'Database error saat mencari dokter.', error: err }));
+            }
+            if (dokterResults.length === 0) {
+                return db.rollback(() => res.status(404).json({ message: `Tidak ada dokter yang tersedia untuk poli ${poli} pada hari tersebut.` }));
+            }
+            const assignedDoctor = dokterResults[0];
 
-          const nextNumber = antrianResult[0].count + 1;
-          const nomorAntrian = `${poliCode}-${nextNumber.toString().padStart(3, '0')}`;
-          const pendaftaranData = {
-            pasien_id: pasienId,
-            dokter_id: assignedDoctor.id,
-            tanggal_pendaftaran: hariTujuan,
-            jam_pemeriksaan: jamTujuan,
-            poli_tujuan: poli,
-            keluhan,
-            status_pasien: statusPasien,
-            nomor_antrian: nomorAntrian,
-          };
+            const proceedWithRegistration = (pasienId, noRekamMedis, statusPasien) => {
+                const poliCode = poliCodeMapping[poli] || 'XX';
+                const queryAntrian = 'SELECT COUNT(*) as count FROM pendaftaran WHERE poli_tujuan = ? AND tanggal_pendaftaran = ? FOR UPDATE';
 
-          db.query('INSERT INTO pendaftaran SET ?', pendaftaranData, (err) => {
-            if (err) return res.status(500).json({ message: 'Gagal menyimpan data pendaftaran.', error: err });
+                db.query(queryAntrian, [poli, hariTujuan], (err, antrianResult) => {
+                    if (err) {
+                        return db.rollback(() => res.status(500).json({ message: 'Gagal menghitung antrian.', error: err }));
+                    }
 
-            io.emit('pendaftaran_baru', { message: 'Satu pasien telah mendaftar!' });
+                    const nextNumber = antrianResult[0].count + 1;
+                    const nomorAntrian = `${poliCode}-${nextNumber.toString().padStart(3, '0')}`;
+                    const pendaftaranData = {
+                        pasien_id: pasienId,
+                        dokter_id: assignedDoctor.id,
+                        tanggal_pendaftaran: hariTujuan,
+                        jam_pemeriksaan: jamTujuan,
+                        poli_tujuan: poli,
+                        keluhan,
+                        status_pasien: statusPasien,
+                        nomor_antrian: nomorAntrian,
+                    };
 
-            console.log(`Pendaftaran baru berhasil untuk pasien ID: ${pasienId}, No. Antrian: ${nomorAntrian}`);
-            res.status(200).json({
-              message: 'Pendaftaran berhasil!',
-              data: { ...req.body, noRekamMedis, nomorAntrian, statusPasien, namaDokter: assignedDoctor.nama }
+                    db.query('INSERT INTO pendaftaran SET ?', pendaftaranData, (err, result) => {
+                        if (err) {
+                            return db.rollback(() => {
+                                console.error("GAGAL INSERT PENDAFTARAN:", err);
+                                res.status(500).json({ message: 'Gagal menyimpan data pendaftaran.', error: err.sqlMessage });
+                            });
+                        }
+
+                        db.commit(err => {
+                            if (err) {
+                                return db.rollback(() => res.status(500).json({ message: 'Gagal menyelesaikan transaksi.', error: err }));
+                            }
+
+                            io.emit('pendaftaran_baru', { message: 'Satu pasien telah mendaftar!' });
+                            res.status(200).json({
+                                message: 'Pendaftaran berhasil!',
+                                data: { ...req.body, noRekamMedis, nomorAntrian, statusPasien, namaDokter: assignedDoctor.nama }
+                            });
+                        });
+                    });
+                });
+            };
+
+            db.query('SELECT * FROM pasien WHERE nik = ?', [nik], (err, pasienResults) => {
+                if (err) {
+                    return db.rollback(() => res.status(500).json({ message: 'Database error saat cek NIK.', error: err }));
+                }
+
+                if (pasienResults.length > 0) {
+                    proceedWithRegistration(pasienResults[0].id, pasienResults[0].no_rm, 'Pasien Terdaftar');
+                } else {
+                    const noRekamMedis = `RM${Math.floor(100000 + Math.random() * 900000)}`;
+                    const pasienBaru = {
+                        nik, no_rm: noRekamMedis, nama_lengkap: namaLengkap, jenis_kelamin: jenisKelamin,
+                        tanggal_lahir: tanggalLahir, alamat, no_hp: noHandphone, tanggal_pendaftaran: new Date()
+                    };
+
+                    db.query('INSERT INTO pasien SET ?', pasienBaru, (err, result) => {
+                        if (err) {
+                            return db.rollback(() => {
+                                console.error("GAGAL INSERT PASIEN:", err);
+                                res.status(500).json({ message: 'Gagal menyimpan data pasien baru.', error: err.sqlMessage });
+                            });
+                        }
+                        proceedWithRegistration(result.insertId, noRekamMedis, 'Pasien Baru');
+                    });
+                }
             });
-          });
         });
-      };
-
-      if (pasienResults.length > 0) {
-        proceedToRegister(pasienResults[0].id, pasienResults[0].no_rm, 'Pasien Terdaftar');
-      } else {
-        const noRekamMedis = `RM${Math.floor(100000 + Math.random() * 900000)}`;
-        
-        // --- PERBAIKAN FINAL ---
-        // Mengubah `no_handphone` menjadi `no_hp` agar cocok dengan nama kolom di database Anda
-        const pasienBaru = { 
-            nik: nik, 
-            no_rm: noRekamMedis, 
-            nama_lengkap: namaLengkap, 
-            jenis_kelamin: jenisKelamin, 
-            tanggal_lahir: tanggalLahir, 
-            alamat: alamat, 
-            no_hp: noHandphone, // <-- NAMA FIELD DIPERBAIKI
-            tanggal_pendaftaran: new Date()
-        };
-        
-        db.query('INSERT INTO pasien SET ?', pasienBaru, (err, result) => {
-          if (err) {
-              console.error("DATABASE ERROR SAAT INSERT PASIEN:", err); 
-              return res.status(500).json({ message: 'Gagal menyimpan data pasien baru.', error: err.sqlMessage || err.message });
-          }
-          proceedToRegister(result.insertId, noRekamMedis, 'Pasien Baru');
-        });
-      }
     });
-  });
 });
-
 
 // Endpoint Pesan (Tidak ada perubahan)
 app.post('/api/pesan', (req, res) => {
@@ -350,7 +367,7 @@ app.get('/api/dashboard/stats', (req, res) => {
   const today = new Date().toISOString().slice(0, 10);
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
-  const todayDayName = dayMapping[new Date().getDay()]; // Menggunakan mapping yang konsisten
+  const todayDayName = dayMapping[new Date().getDay()];
 
   const q1 = 'SELECT COUNT(*) as count FROM pendaftaran WHERE tanggal_pendaftaran = ?';
   const q2 = 'SELECT COUNT(*) as count FROM pendaftaran WHERE MONTH(tanggal_pendaftaran) = ? AND YEAR(tanggal_pendaftaran) = ?';

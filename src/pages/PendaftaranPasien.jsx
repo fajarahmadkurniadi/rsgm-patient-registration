@@ -15,8 +15,6 @@ const PendaftaranPasien = () => {
     alamat: '',
     noHandphone: '',
     poli: '',
-    // --- PERBAIKAN DI SINI ---
-    // Menambahkan nilai awal untuk hariTujuan dan jamTujuan
     hariTujuan: '',
     jamTujuan: '',
     keluhan: '',
@@ -135,11 +133,11 @@ const PendaftaranPasien = () => {
               <select id="poli" name="poli" className="select-poli" value={formData.poli} onChange={handleInputChange}>
                 <option value="">Pilih Poli Tujuan</option>
                 <option value="Ortodonti">Poli Ortodonti</option>
-                <option value="Bedah Mulut">Poli Bedah Mulut dan Maksilofasial</option>
+                <option value="Bedah Mulut dan Maksilofasial">Poli Bedah Mulut dan Maksilofasial</option>
                 <option value="Gigi Umum">Poli Gigi Umum</option>
                 <option value="Konservasi Gigi">Poli Konservasi Gigi</option>
                 <option value="Prosthodonsia">Poli Prostodonsia</option>
-                <option value="Kesehatan Gigi Anak">Poli Kedokteran Gigi Anak</option>
+                <option value="Gigi Anak">Poli Kedokteran Gigi Anak</option>
                 <option value="Periodonsia">Poli Periodonsia</option>
                 <option value="Endodonti">Poli Endodonti</option>
                 <option value="Penyakit Mulut">Poli Penyakit Mulut</option>
