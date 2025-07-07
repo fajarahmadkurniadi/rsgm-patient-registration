@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const PendaftaranPasien = () => {
   const navigate = useNavigate();
   
+  // State untuk menampung semua data dari form
   const [formData, setFormData] = useState({
     namaLengkap: '',
     nik: '',
@@ -14,40 +15,26 @@ const PendaftaranPasien = () => {
     alamat: '',
     noHandphone: '',
     poli: '',
-    hariTujuan: '',
     jamTujuan: '',
     keluhan: '',
     persetujuan: false,
   });
 
+  // Handler untuk mengelola perubahan pada semua input
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-
-    // --- VALIDASI HARI MINGGU DI SINI ---
-    if (name === 'hariTujuan') {
-      // Buat objek Date dari tanggal yang dipilih
-      // Tambahkan T00:00:00 untuk menghindari masalah timezone
-      const selectedDay = new Date(value + 'T00:00:00');
-      
-      // getDay() mengembalikan 0 untuk hari Minggu
-      if (selectedDay.getDay() === 0) {
-        alert('Pemeriksaan tidak tersedia di hari Minggu, harap pilih hari lain.');
-        return; // Hentikan pembaruan state jika hari Minggu
-      }
-    }
-    // --- AKHIR VALIDASI ---
-
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  // Handler saat form di-submit, sekarang menjadi async
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Validasi form kosong
-    const requiredFields = ['namaLengkap', 'nik', 'jenisKelamin', 'tanggalLahir', 'alamat', 'noHandphone', 'poli', 'hariTujuan', 'jamTujuan', 'keluhan'];
+    const requiredFields = ['namaLengkap', 'nik', 'jenisKelamin', 'tanggalLahir', 'alamat', 'noHandphone', 'poli', 'jamTujuan', 'keluhan'];
     for (const field of requiredFields) {
       if (!formData[field]) {
         alert('Harap isi semua kolom yang wajib diisi.');
@@ -67,7 +54,30 @@ const PendaftaranPasien = () => {
         return;
     }
 
-    navigate('/buktipendaftaran', { state: { registrationData: formData } });
+    // Mengirim data ke backend
+    try {
+      const response = await fetch('http://localhost:3001/api/pendaftaran', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Jika backend merespons sukses, navigasi ke halaman bukti pendaftaran
+        // dan kirim data yang mungkin sudah diproses oleh backend (termasuk No. Antrian, dll.)
+        navigate('/buktipendaftaran', { state: { registrationData: result.data } });
+      } else {
+        // Jika ada error dari backend (misal: NIK sudah terdaftar)
+        alert(`Error: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('Error submitting registration:', error);
+      alert('Terjadi kesalahan saat mengirim pendaftaran. Silakan coba lagi.');
+    }
   };
 
   return (

@@ -9,8 +9,10 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler,
 } from 'chart.js';
 
+// Daftarkan semua komponen Chart.js yang akan digunakan
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -18,18 +20,19 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
-const WeeklyVisitChart = () => {
+const WeeklyVisitChart = ({ weeklyData = [0, 0, 0, 0, 0, 0, 0] }) => { 
   const data = {
     labels: ['Ming', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
     datasets: [
       {
         label: 'Kunjungan Pasien',
-        data: [16, 19, 31, 28, 37, 18, 27],
+        data: weeklyData,
         borderColor: '#36803E',
-        backgroundColor: 'rgba(46, 96, 52, 0.2)',
+        backgroundColor: 'rgba(54, 128, 62, 0.2)',
         pointBackgroundColor: '#E7C11F',
         pointBorderColor: '#E7C11F',
         pointRadius: 5,
@@ -42,7 +45,7 @@ const WeeklyVisitChart = () => {
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false, // Ini sudah benar
+    maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
       title: { display: false },
@@ -50,18 +53,26 @@ const WeeklyVisitChart = () => {
     scales: {
       y: {
         beginAtZero: true,
-        max: 50,
-        ticks: { stepSize: 10, color: 'rgba(86, 86, 86, 1)' },
-        grid: { color: 'rgba(86, 86, 86, 1)' },
+        max: 50, // <-- TAMBAHKAN KEMBALI BARIS INI
+        ticks: {
+          stepSize: 10,
+          color: 'rgba(86, 86, 86, 1)',
+        },
+        grid: {
+          color: 'rgba(200, 200, 200, 0.3)',
+        },
       },
       x: {
-        ticks: { color: 'rgba(86, 86, 86, 1)' },
-        grid: { color: 'rgba(86, 86, 86, 1)' },
+        ticks: {
+          color: 'rgba(86, 86, 86, 1)',
+        },
+        grid: {
+          color: 'rgba(200, 200, 200, 0.3)',
+        },
       },
     },
   };
 
-  // KUNCI PERBAIKAN: Bungkus <Line> dengan div ini
   return (
     <div className="chart-wrapper">
       <Line options={options} data={data} />

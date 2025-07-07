@@ -7,34 +7,24 @@ import searchIcon from '../../assets/Icon/Search.webp';
 import deleteIcon from '../../assets/Icon/Hapus Data.webp';
 import editIcon from '../../assets/Icon/Edit Data.webp';
 
-// Data dummy awal. Dalam aplikasi nyata, ini akan diambil dari server/API.
-const initialDoctorData = [
-  { id: 1, nama: 'drg. Siti Nazifah, Sp.Ort., Subsp. OD (K)', nip: '200600193', spesialis: 'Ortodonti', jadwal: 'Senin, Rabu (08:30 - 12:00)', status: 'Hadir' },
-  { id: 2, nama: 'drg. Andi Surya, Sp. BM', nip: '1957204830', spesialis: 'Bedah Mulut', jadwal: 'Kamis, Sabtu (08:30 - 12:00)', status: 'Hadir' },
-  { id: 3, nama: 'drg. Marsha Anjely Julius, S.K.G.', nip: '230600043', spesialis: 'Gigi Umum', jadwal: 'Senin, Rabu (13:30 - 18:00)', status: 'Hadir' },
-  { id: 4, nama: 'drg. Citra Wahyuni, Sp. KG', nip: '1840965320', spesialis: 'Konservasi Gigi', jadwal: 'Kamis, Sabtu (13:30 - 18:00)', status: 'Berhalangan' },
-  { id: 5, nama: 'drg. Eka Pratama, Sp.Pros', nip: '2579103826', spesialis: 'Prosthodonsia', jadwal: 'Senin, Rabu (08:30 - 12:00)', status: 'Hadir' },
-  { id: 6, nama: 'drg. Rina Amelia, M.Kes', nip: '201504881', spesialis: 'Kesehatan Gigi Anak', jadwal: 'Selasa, Kamis (09:00 - 14:00)', status: 'Hadir' },
-  { id: 7, nama: 'drg. Ivan Zulkarnain, Sp.Perio', nip: '200911547', spesialis: 'Periodonsia', jadwal: 'Jumat, Sabtu (10:00 - 15:00)', status: 'Menggantikan' },
-  { id: 8, nama: 'drg. Bima Sakti', nip: '210700211', spesialis: 'Gigi Umum', jadwal: 'Senin, Rabu (08:30 - 12:00)', status: 'Hadir' },
-];
+// Data dummy sudah dihapus
 
 const specialistOptions = [
-    "Ortodonti", "Bedah Mulut", "Gigi Umum", "Konservasi Gigi", 
-    "Prosthodonsia", "Kesehatan Gigi Anak", "Periodonsia", "Endodonti", 
+    "Ortodonti", "Bedah Mulut", "Gigi Umum", "Konservasi Gigi",
+    "Prosthodonsia", "Kesehatan Gigi Anak", "Periodonsia", "Endodonti",
     "Penyakit Mulut", "Radiologi Gigi dan Mulut", "Gigi Estetika dan Kosmetik", "Gigi Geriatri"
 ];
 
 const Jadwal = () => {
-  // State untuk data utama dan yang ditampilkan
-  const [allSchedules, setAllSchedules] = useState(initialDoctorData);
+  // State untuk data utama (dari API) dan yang ditampilkan
+  const [allSchedules, setAllSchedules] = useState([]); // Dimulai dengan array kosong
   const [schedules, setSchedules] = useState([]);
 
   // State untuk semua filter
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
-  
+
   // State untuk total harian
   const [dailyTotal, setDailyTotal] = useState(0);
 
@@ -42,6 +32,25 @@ const Jadwal = () => {
   const [showAddSchedule, setShowAddSchedule] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(null);
   const [deletingScheduleId, setDeletingScheduleId] = useState(null);
+
+  // Fungsi untuk mengambil data dokter dari API
+  const fetchSchedules = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/dokter'); // Mengambil dari data dokter
+      if (!response.ok) {
+        throw new Error('Gagal mengambil data jadwal');
+      }
+      const data = await response.json();
+      setAllSchedules(data); // Simpan semua data dokter/jadwal
+    } catch (error) {
+      console.error("Gagal mengambil data:", error);
+    }
+  };
+
+  // Mengambil data saat komponen pertama kali dimuat
+  useEffect(() => {
+    fetchSchedules();
+  }, []);
 
   // Fungsi untuk mendapatkan nama hari dari tanggal
   const getDayName = (date) => {
@@ -51,33 +60,37 @@ const Jadwal = () => {
 
   // --- FUNGSI CRUD (Create, Read, Update, Delete) ---
   const handleAddSchedule = (newSchedule) => {
-    setAllSchedules(prev => [...prev, { ...newSchedule, id: Date.now() }]);
+    // Di aplikasi nyata, ini akan menjadi POST request ke API untuk membuat jadwal baru
+    // Untuk simulasi, kita refresh data dokter karena jadwal ada di sana
+    fetchSchedules();
     setShowAddSchedule(false);
   };
 
   const handleUpdateSchedule = (updatedSchedule) => {
-    setAllSchedules(prev => prev.map(s => s.id === updatedSchedule.id ? updatedSchedule : s));
+    // Panggil API untuk update, lalu fetch ulang
+    fetchSchedules();
     setEditingSchedule(null);
   };
-  
+
   const handleDeleteSchedule = () => {
-    setAllSchedules(prev => prev.filter(s => s.id !== deletingScheduleId));
+    // Panggil API untuk delete, lalu fetch ulang
+    fetchSchedules();
     setDeletingScheduleId(null);
   };
 
   // useEffect untuk memfilter data setiap kali ada perubahan
   useEffect(() => {
     let data = [...allSchedules];
-    
+
     if (selectedDate) {
       const dayName = getDayName(selectedDate);
-      data = data.filter(doc => doc.jadwal.includes(dayName));
+      data = data.filter(doc => doc.jadwal && doc.jadwal.includes(dayName));
     }
 
     if (selectedSpecialty) {
       data = data.filter(doc => doc.spesialis === selectedSpecialty);
     }
-    
+
     setDailyTotal(data.length);
 
     if (searchTerm) {
@@ -86,9 +99,9 @@ const Jadwal = () => {
         doc.nama.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     setSchedules(data);
-    
+
   }, [searchTerm, selectedDate, selectedSpecialty, allSchedules]);
 
   const getStatusClass = (status) => {
@@ -112,16 +125,16 @@ const Jadwal = () => {
           <div className="jd-filters">
             <div className="jd-search-bar">
               <img src={searchIcon} alt="search" />
-              <input 
-                type="text" 
-                placeholder="Cari berdasarkan NIP atau Nama" 
+              <input
+                type="text"
+                placeholder="Cari berdasarkan NIP atau Nama"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <select 
-              className="jd-select" 
-              value={selectedSpecialty} 
+            <select
+              className="jd-select"
+              value={selectedSpecialty}
               onChange={(e) => setSelectedSpecialty(e.target.value)}
             >
               <option value="">Semua Spesialis</option>
@@ -129,9 +142,9 @@ const Jadwal = () => {
                 <option key={spec} value={spec}>{spec}</option>
               ))}
             </select>
-            <input 
-              type="date" 
-              className="jd-date-input" 
+            <input
+              type="date"
+              className="jd-date-input"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
             />
@@ -200,9 +213,9 @@ const Jadwal = () => {
           <p>Menampilkan {schedules.length} dari <span>{dailyTotal}</span> Dokter</p>
         </div>
       </div>
-      
+
       {showAddSchedule && (
-        <AddScheduleOverlay 
+        <AddScheduleOverlay
           onClose={() => setShowAddSchedule(false)}
           onAddSchedule={handleAddSchedule}
           doctorList={allDoctorData}
@@ -229,6 +242,6 @@ const Jadwal = () => {
       )}
     </>
   );
-};
+}
 
 export default Jadwal;

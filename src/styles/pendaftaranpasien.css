@@ -53,6 +53,7 @@
 .pendaftaran-pasien-container h1 {
     font-size: 70px;
     color: var(--warna-primer);
+    text-align: center;
     font-weight: 600;
     margin: 40px 0;
     animation: fadeInDown 1s ease-in-out;

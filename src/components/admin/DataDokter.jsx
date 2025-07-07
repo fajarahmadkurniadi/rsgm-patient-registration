@@ -4,40 +4,99 @@ import AddDoctorOverlay from './AddDoctorOverlay';
 import DoctorDetailOverlay from './DoctorDetailOverlay';
 import searchIcon from '../../assets/Icon/Search.webp'; // Impor ikon search
 
-const initialDoctorData = [
-    { id: 1, nama: 'drg. Siti Nazifah, Sp.Ort., Subsp. OD (K)', nip: '200600193', spesialis: 'Ortodonti', jadwal: 'Senin - Rabu (08:30 - 12:00)', tanggal_lahir: '21/09/2001', no_str: 'STR202405038', no_hp: '0812-6944-9663', alamat: 'Jl. Gaperta V No. 21 Blok K, Medan', status: 'Aktif', foto: null },
-    { id: 2, nama: 'drg. Andi Surya, Sp. BM', nip: '1957204830', spesialis: 'Bedah Mulut', jadwal: 'Kamis - Sabtu (08:30 - 12:00)', tanggal_lahir: '15/05/1985', no_str: 'STR202311201', no_hp: '0813-1122-3344', alamat: 'Jl. Setia Budi No. 18, Medan', status: 'Aktif', foto: null },
-    { id: 3, nama: 'drg. Marsha Anjely Julius, S.K.G.', nip: '230600043', spesialis: 'Gigi Umum', jadwal: 'Senin - Rabu (13:30 - 18:00)', tanggal_lahir: '03/08/1998', no_str: 'STR202209015', no_hp: '0815-5566-7788', alamat: 'Jl. Dr. Mansyur No. 5, Medan', status: 'Aktif', foto: null },
-    { id: 4, nama: 'drg. Citra Wahyuni, Sp. KG', nip: '1840965320', spesialis: 'Konservasi Gigi', jadwal: 'Kamis - Sabtu (13:30 - 18:00)', tanggal_lahir: '11/11/1990', no_str: 'STR202107331', no_hp: '0818-1111-2222', alamat: 'Jl. Iskandar Muda No. 30, Medan', status: 'Tidak Aktif', foto: null },
-    { id: 5, nama: 'drg. Eka Pratama, Sp.Pros', nip: '2579103826', spesialis: 'Prosthodonsia', jadwal: 'Senin - Rabu (08:30 - 12:00)', tanggal_lahir: '28/02/1988', no_str: 'STR202002123', no_hp: '0819-3333-4444', alamat: 'Jl. Multatuli No. 12, Medan', status: 'Aktif', foto: null },
-    { id: 6, nama: 'drg. Rina Amelia, M.Kes', nip: '201504881', spesialis: 'Kesehatan Gigi Anak', jadwal: 'Selasa & Kamis (09:00 - 14:00)', tanggal_lahir: '19/07/1989', no_str: 'STR201908567', no_hp: '0817-5555-9999', alamat: 'Jl. Karya Wisata, Medan', status: 'Aktif', foto: null },
-    { id: 7, nama: 'drg. Ivan Zulkarnain, Sp.Perio', nip: '200911547', spesialis: 'Periodonsia', jadwal: 'Jumat & Sabtu (10:00 - 15:00)', tanggal_lahir: '30/01/1987', no_str: 'STR201803456', no_hp: '0816-2222-1111', alamat: 'Jl. Ring Road No. 88, Medan', status: 'Aktif', foto: null },
-    { id: 8, nama: 'drg. Bima Sakti', nip: '210700211', spesialis: 'Gigi Umum', jadwal: 'Senin - Rabu (08:30 - 12:00)', tanggal_lahir: '05/06/1995', no_str: 'STR202401889', no_hp: '0812-8888-7777', alamat: 'Jl. Pancing No. 1, Medan', status: 'Aktif', foto: null },
-];
-
 const DataDokter = () => {
-  const [allDoctorData, setAllDoctorData] = useState(initialDoctorData);
+  // State sekarang dimulai dengan array kosong, akan diisi dari API
+  const [allDoctorData, setAllDoctorData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+
+  // State untuk filter
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState(allDoctorData);
+  
+  // State untuk mengontrol visibilitas overlays
   const [showAddOverlay, setShowAddOverlay] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
 
-  const handleAddDoctor = (newDoctor) => { setAllDoctorData(prev => [...prev, { ...newDoctor, id: Date.now() }]); setShowAddOverlay(false); };
-  const handleUpdateDoctor = (updatedDoctor) => { setAllDoctorData(prev => prev.map(doc => doc.id === updatedDoctor.id ? updatedDoctor : doc)); setSelectedDoctor(null); };
-  const handleDeleteDoctor = (doctorId) => { setAllDoctorData(prev => prev.filter(doc => doc.id !== doctorId)); setSelectedDoctor(null); };
-  const handleViewDetail = (doctor) => setSelectedDoctor(doctor);
-  const handleCloseOverlays = () => { setShowAddOverlay(false); setSelectedDoctor(null); };
+  // Fungsi untuk mengambil data dokter dari API
+  const fetchDoctors = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/dokter');
+      if (!response.ok) {
+        throw new Error('Gagal mengambil data dari server');
+      }
+      const data = await response.json();
+      setAllDoctorData(data);
+      setFilteredData(data); // Inisialisasi data yang difilter
+    } catch (error) {
+      console.error("Gagal mengambil data dokter:", error);
+    }
+  };
 
+  // Gunakan useEffect untuk mengambil data saat komponen pertama kali dimuat
+  useEffect(() => {
+    fetchDoctors();
+  }, []);
+
+  // useEffect untuk memfilter data setiap kali ada perubahan pada pencarian atau data utama
   useEffect(() => {
     let data = [...allDoctorData];
     if (searchTerm) {
       data = data.filter(dokter =>
-        dokter.nip.includes(searchTerm) ||
-        dokter.nama.toLowerCase().includes(searchTerm.toLowerCase())
+        (dokter.nip && dokter.nip.includes(searchTerm)) ||
+        (dokter.nama && dokter.nama.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
     setFilteredData(data);
   }, [searchTerm, allDoctorData]);
+
+  // --- Fungsi CRUD (Create, Read, Update, Delete) yang memanggil API ---
+  const handleAddDoctor = async (newDoctor) => {
+    try {
+        await fetch('http://localhost:3001/api/dokter', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newDoctor)
+        });
+        fetchDoctors(); // Ambil ulang data untuk refresh tabel
+        setShowAddOverlay(false);
+    } catch (error) { 
+        console.error("Gagal menambah dokter:", error);
+        alert("Gagal menambah dokter. Silakan coba lagi.");
+    }
+  };
+  
+  const handleUpdateDoctor = async (updatedDoctor) => {
+    try {
+        await fetch(`http://localhost:3001/api/dokter/${updatedDoctor.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedDoctor)
+        });
+        fetchDoctors(); // Refresh data
+    } catch (error) { 
+        console.error("Gagal update dokter:", error);
+        alert("Gagal memperbarui data dokter. Silakan coba lagi.");
+    } finally {
+        setSelectedDoctor(null);
+    }
+  };
+
+  const handleDeleteDoctor = async (doctorId) => {
+    try {
+        await fetch(`http://localhost:3001/api/dokter/${doctorId}`, { method: 'DELETE' });
+        fetchDoctors(); // Refresh data
+    } catch (error) { 
+        console.error("Gagal menghapus dokter:", error);
+        alert("Gagal menghapus dokter. Silakan coba lagi.");
+    } finally {
+        setSelectedDoctor(null);
+    }
+  };
+
+  const handleViewDetail = (doctor) => setSelectedDoctor(doctor);
+  const handleCloseOverlays = () => { 
+    setShowAddOverlay(false); 
+    setSelectedDoctor(null); 
+  };
 
   return (
     <>
@@ -54,7 +113,7 @@ const DataDokter = () => {
                 <img src={searchIcon} alt="Cari" className="search-icon"/>
                 <input 
                     type="text" 
-                    placeholder="Cari berdasarkan NIP atau Nama" 
+                    placeholder="Cari berdasarkan NIP atau Nama Dokter" 
                     className="search-input"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -68,7 +127,12 @@ const DataDokter = () => {
             <table>
               <thead>
                 <tr>
-                  <th>No.</th><th>Nama Dokter</th><th>NIP</th><th>Spesialis</th><th>Jadwal Praktek</th><th>Aksi</th>
+                  <th>No.</th>
+                  <th>Nama Dokter</th>
+                  <th>NIP</th>
+                  <th>Spesialis</th>
+                  <th>Jadwal Praktek</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -80,10 +144,10 @@ const DataDokter = () => {
                       <td>{dokter.nip}</td>
                       <td>{dokter.spesialis}</td>
                       <td>
-                        {dokter.jadwal.split('(').map((part, partIndex) => (
+                        {dokter.jadwal && dokter.jadwal.split('(').map((part, partIndex) => (
                           <React.Fragment key={partIndex}>
                             {partIndex > 0 ? `(${part}` : part}
-                            {partIndex === 0 && <br />} 
+                            {partIndex === 0 && dokter.jadwal.includes('(') && <br />} 
                           </React.Fragment>
                         ))}
                       </td>
@@ -95,7 +159,11 @@ const DataDokter = () => {
                     </tr>
                   ))
                 ) : (
-                  <tr><td colSpan="6" className="no-data-found">Dokter tidak ditemukan</td></tr>
+                  <tr>
+                    <td colSpan="6" className="no-data-found">
+                      {searchTerm ? "Dokter tidak ditemukan" : "Tidak ada data dokter"}
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>
@@ -106,8 +174,20 @@ const DataDokter = () => {
         </div>
       </div>
 
-      {showAddOverlay && <AddDoctorOverlay onClose={handleCloseOverlays} onAddDoctor={handleAddDoctor} />}
-      {selectedDoctor && <DoctorDetailOverlay doctor={selectedDoctor} onClose={handleCloseOverlays} onUpdate={handleUpdateDoctor} onDelete={handleDeleteDoctor} />}
+      {showAddOverlay && (
+        <AddDoctorOverlay 
+            onClose={handleCloseOverlays} 
+            onAddDoctor={handleAddDoctor} 
+        />
+      )}
+      {selectedDoctor && (
+        <DoctorDetailOverlay 
+            doctor={selectedDoctor} 
+            onClose={handleCloseOverlays} 
+            onUpdate={handleUpdateDoctor} 
+            onDelete={handleDeleteDoctor} 
+        />
+      )}
     </>
   );
 };

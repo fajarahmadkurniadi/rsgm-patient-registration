@@ -1,25 +1,17 @@
 import React from 'react';
 
-// Data dummy untuk daftar pasien, bisa diganti dari API nanti
-const dailyPatients = [
-  { id: 1, nama: 'Jakjuk Khan Pajeet', jam: '08:28', poli: 'Umum' },
-  { id: 2, nama: 'Said Chigga', jam: '09:32', poli: 'Gigi' },
-  { id: 3, nama: 'Nirai One Well Well', jam: '10:01', poli: 'Anak' },
-  { id: 4, nama: 'Fajar Just Fajar', jam: '10:54', poli: 'Umum' },
-  { id: 5, nama: 'Fakhri Skroep Djamariz', jam: '11:42', poli: 'Umum' },
-  { id: 6, nama: 'Paiz Brodiee', jam: '12:42', poli: 'Bedah' },
-  { id: 7, nama: 'Putri Aulia', jam: '13:05', poli: 'Anak' },
-];
-
 // Fungsi helper untuk memberikan class CSS berdasarkan nama Poli
+// Ini akan berguna jika Anda ingin memberi warna berbeda untuk setiap poli di masa depan
 const getPoliClassName = (poli) => {
+  if (!poli) return '';
+  // Mengubah "Gigi Umum" menjadi "poli-gigi-umum"
   return `poli-${poli.toLowerCase().replace(/\s+/g, '-')}`;
 };
 
-const DailyPatientList = () => {
+const DailyPatientList = ({ patients = [] }) => { // Terima props 'patients'
   return (
     <div className="patient-daily-container">
-      <h2>Daftar Pasien Harian</h2>
+      <h2>Pasien Hari ini</h2>
       <div className="patient-daily-table-wrapper">
         <table className="patient-daily-table">
           <thead>
@@ -30,15 +22,25 @@ const DailyPatientList = () => {
               <th>Poli</th>
             </tr>
           </thead>
-          <tbody className="patient-daily-table-scnd">
-            {dailyPatients.map((patient) => (
-              <tr key={patient.id}>
-                <td>{patient.id}</td>
-                <td>{patient.nama}</td>
-                <td>{patient.jam}</td>
-                <td id='poli' className={getPoliClassName(patient.poli)}>{patient.poli}</td>
+          <tbody>
+            {patients.length > 0 ? (
+              patients.map((patient, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{patient.nama}</td>
+                  <td>{patient.jamDaftar}</td>
+                  <td className={getPoliClassName(patient.poli)}>
+                    {patient.poli}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" style={{ textAlign: 'center', padding: '2rem' }}>
+                  Belum ada pasien hari ini.
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
