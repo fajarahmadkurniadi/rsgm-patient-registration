@@ -35,17 +35,32 @@ const DoctorDetailOverlay = ({ doctor, onClose, onUpdate, onDelete }) => {
   
   const [schedule, setSchedule] = useState({ days: [], start: '', end: '' });
 
+  const [dataToSave, setDataToSave] = useState(null);
+
   // Fungsi untuk mendapatkan URL gambar yang valid
   const getImageUrl = (fotoPath) => {
+    // Jika tidak ada path foto, kembalikan gambar placeholder
     if (!fotoPath) {
-        return doctorPlaceholder;
+      return doctorPlaceholder;
     }
+  
+    // Jika fotoPath adalah objek File atau Blob (misalnya, saat pratinjau upload)
+    if (fotoPath instanceof File || fotoPath instanceof Blob) {
+      return URL.createObjectURL(fotoPath);
+    }
+  
+    // Jika fotoPath adalah string (path dari database)
     if (typeof fotoPath === 'string') {
-        // Jika path dari database, gabungkan dengan URL server
-        return `${API_URL}/${fotoPath}`;
+      // Jika sudah merupakan URL (untuk jaga-jaga), langsung kembalikan
+      if (fotoPath.startsWith('blob:') || fotoPath.startsWith('http')) {
+        return fotoPath;
+      }
+      // Jika bukan, gabungkan dengan URL server
+      return `${API_URL}/${fotoPath}`;
     }
-    // Jika foto adalah objek File dari preview
-    return URL.createObjectURL(fotoPath);
+  
+    // Jika tipe data tidak dikenali, kembalikan placeholder untuk mencegah error
+    return doctorPlaceholder;
   };
 
   useEffect(() => {
@@ -102,29 +117,37 @@ const DoctorDetailOverlay = ({ doctor, onClose, onUpdate, onDelete }) => {
         alert('Harap isi semua form terlebih dahulu!');
         return;
     }
-
+  
     const jadwalString = `${schedule.days.join(', ')} (${schedule.start} - ${schedule.end})`;
-    
+  
     // Siapkan data final untuk dikirim
     const finalData = {
         ...editedData,
         jadwal: jadwalString,
-        tanggal_lahir: editedData.tanggal_lahir.includes('-') 
-            ? formatDateForStorage(editedData.tanggal_lahir) 
+        tanggal_lahir: editedData.tanggal_lahir.includes('-')
+            ? formatDateForStorage(editedData.tanggal_lahir)
             : editedData.tanggal_lahir,
     };
-    
-    // Perbarui state lokal sebelum dikirim
-    setEditedData(finalData);
+  
+    // Simpan data final ke state baru dan tampilkan konfirmasi
+    setDataToSave(finalData);
     setShowSaveConfirmation(true);
   };
   
   const handleConfirmSave = () => {
-    onUpdate(editedData); // Kirim state `editedData` yang sudah berisi file jika ada
+    if (dataToSave) {
+      onUpdate(dataToSave); // Gunakan data dari state `dataToSave`
+    }
     setShowSaveConfirmation(false);
+    setDataToSave(null); // Bersihkan state
   };
   
-  const handleCancelSave = () => setShowSaveConfirmation(false);
+  
+  const handleCancelSave = () => {
+    setShowSaveConfirmation(false);
+    setDataToSave(null); // Bersihkan state saat dibatalkan
+  };
+  
   const handleDeleteClick = () => setShowDeleteConfirmation(true);
   const handleConfirmDelete = () => onDelete(doctor.id);
   const handleCancelDelete = () => setShowDeleteConfirmation(false);
