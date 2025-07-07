@@ -27,12 +27,14 @@ const io = new Server(httpServer, {
   },
 });
 
+// Konfigurasi database dengan timezone
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
   database: 'rsgm_db',
-  timezone: 'Asia/Jakarta',
+  timezone: '+07:00', // Set timezone ke WIB
+  dateStrings: true, // Mengembalikan tanggal sebagai string
 });
 
 db.connect((err) => {
@@ -41,6 +43,15 @@ db.connect((err) => {
     return;
   }
   console.log('Successfully connected to the MySQL database.');
+
+  // Set timezone ke WIB (UTC+7)
+  db.query("SET time_zone = '+07:00'", (err) => {
+    if (err) {
+      console.error('Error setting timezone:', err);
+    } else {
+      console.log('Timezone set to WIB (UTC+7)');
+    }
+  });
 });
 
 // Helper untuk mengubah tanggal DD/MM/YYYY ke format YYYY-MM-DD
@@ -54,6 +65,19 @@ const toMySQLDate = (dateStr) => {
     return `${parts[2]}-${parts[1]}-${parts[0]}`;
   }
   return null;
+};
+
+// Helper untuk zona waktu lokal (WIB = UTC+7)
+const toLocalDateTime = (date = new Date()) => {
+  const offset = 7 * 60; // 7 jam dalam menit
+  const localDate = new Date(date.getTime() + offset * 60 * 1000);
+  return localDate.toISOString().slice(0, 19).replace('T', ' ');
+};
+
+const toLocalDate = (date = new Date()) => {
+  const offset = 7 * 60; // 7 jam dalam menit
+  const localDate = new Date(date.getTime() + offset * 60 * 1000);
+  return localDate.toISOString().slice(0, 10);
 };
 
 // ==========================================================
@@ -138,7 +162,7 @@ app.post('/api/pendaftaran', (req, res) => {
 
       const proceedWithRegistration = (pasienId, noRekamMedis, statusPasien) => {
         const poliCode = poliCodeMapping[poli] || 'XX';
-        const queryAntrian = 'SELECT COUNT(*) as count FROM pendaftaran WHERE poli_tujuan = ? AND tanggal_pendaftaran = ? FOR UPDATE';
+        const queryAntrian = 'SELECT COUNT(*) as count FROM pendaftaran WHERE poli_tujuan = ? AND DATE(tanggal_pendaftaran) = ? FOR UPDATE';
 
         db.query(queryAntrian, [poli, hariTujuan], (err, antrianResult) => {
           if (err) {
@@ -147,15 +171,18 @@ app.post('/api/pendaftaran', (req, res) => {
 
           const nextNumber = antrianResult[0].count + 1;
           const nomorAntrian = `${poliCode}-${nextNumber.toString().padStart(3, '0')}`;
+
+          // PERBAIKAN: Gunakan tanggal yang benar untuk pendaftaran
           const pendaftaranData = {
             pasien_id: pasienId,
             dokter_id: assignedDoctor.id,
-            tanggal_pendaftaran: hariTujuan,
+            tanggal_pendaftaran: hariTujuan, // Ini sudah dalam format YYYY-MM-DD
             jam_pemeriksaan: jamTujuan,
             poli_tujuan: poli,
             keluhan,
             status_pasien: statusPasien,
             nomor_antrian: nomorAntrian,
+            created_at: toLocalDateTime(), // Waktu pembuatan dengan zona lokal
           };
 
           db.query('INSERT INTO pendaftaran SET ?', pendaftaranData, (err, result) => {
@@ -198,7 +225,7 @@ app.post('/api/pendaftaran', (req, res) => {
             tanggal_lahir: tanggalLahir,
             alamat,
             no_hp: noHandphone,
-            tanggal_pendaftaran: new Date(),
+            tanggal_pendaftaran: toLocalDateTime(), // Gunakan zona waktu lokal
           };
 
           db.query('INSERT INTO pasien SET ?', pasienBaru, (err, result) => {
@@ -361,15 +388,21 @@ app.get('/api/pasien', (req, res) => {
   });
 });
 
-// GET /api/riwayat (Endpoint yang dimodifikasi untuk daftar)
+// GET /api/riwayat (Endpoint yang dimodifikasi untuk daftar dengan filter)
 // GET /api/riwayat (Endpoint yang dimodifikasi untuk daftar dengan filter)
 app.get('/api/riwayat', (req, res) => {
   const { search, tanggal } = req.query;
 
   let query = `
-      SELECT p.id_pendaftaran as id, p.tanggal_pendaftaran as tanggal_raw, DATE_FORMAT(p.tanggal_pendaftaran, "%d/%m/%Y") as tanggal,
-      p.nomor_antrian, ps.nama_lengkap as nama, ps.nik, p.poli_tujuan as poli,
-      p.jam_pemeriksaan as jam_daftar, p.status_pasien as status
+      SELECT p.id_pendaftaran as id, 
+             p.tanggal_pendaftaran as tanggal_raw, 
+             DATE_FORMAT(p.tanggal_pendaftaran, "%d/%m/%Y") as tanggal,
+             p.nomor_antrian, 
+             ps.nama_lengkap as nama, 
+             ps.nik, 
+             p.poli_tujuan as poli,
+             p.jam_pemeriksaan as jam_daftar, 
+             p.status_pasien as status
       FROM pendaftaran p JOIN pasien ps ON p.pasien_id = ps.id
   `;
 
@@ -382,7 +415,7 @@ app.get('/api/riwayat', (req, res) => {
   }
 
   if (tanggal) {
-    // Gunakan DATE() untuk membandingkan tanggal saja, mengabaikan waktu dan zona waktu
+    // PERBAIKAN: Gunakan DATE() untuk membandingkan tanggal saja, mengabaikan waktu
     whereClauses.push('DATE(p.tanggal_pendaftaran) = ?');
     queryParams.push(tanggal);
   }
@@ -398,7 +431,6 @@ app.get('/api/riwayat', (req, res) => {
       console.error('Database error saat mengambil riwayat:', err);
       return res.status(500).json({ message: 'Database error', error: err });
     }
-    // Kirim hasil dalam format yang konsisten
     res.status(200).json({ results });
   });
 });
@@ -434,12 +466,16 @@ app.get('/api/pesan', (req, res) => {
 });
 
 app.get('/api/dashboard/stats', (req, res) => {
-  const today = new Date().toISOString().slice(0, 10);
+  // Gunakan tanggal lokal untuk statistik
+  const today = toLocalDate();
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
-  const todayDayName = dayMapping[new Date().getDay()];
 
-  const q1 = 'SELECT COUNT(*) as count FROM pendaftaran WHERE tanggal_pendaftaran = ?';
+  // Perbaikan: Buat object Date dengan zona waktu lokal
+  const localNow = new Date();
+  const todayDayName = dayMapping[localNow.getDay()];
+
+  const q1 = 'SELECT COUNT(*) as count FROM pendaftaran WHERE DATE(tanggal_pendaftaran) = ?';
   const q2 = 'SELECT COUNT(*) as count FROM pendaftaran WHERE MONTH(tanggal_pendaftaran) = ? AND YEAR(tanggal_pendaftaran) = ?';
   const q3 = "SELECT COUNT(*) as count FROM dokter WHERE status = 'Aktif'";
   const q4 = "SELECT COUNT(*) as count FROM dokter WHERE jadwal LIKE ? AND status = 'Aktif'";
@@ -462,11 +498,12 @@ app.get('/api/dashboard/stats', (req, res) => {
 });
 
 app.get('/api/dashboard/pasien-hari-ini', (req, res) => {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = toLocalDate();
   const query = `
         SELECT ps.nama_lengkap as nama, p.jam_pemeriksaan as jamDaftar, p.poli_tujuan as poli
         FROM pendaftaran p JOIN pasien ps ON p.pasien_id = ps.id
-        WHERE p.tanggal_pendaftaran = ? ORDER BY p.jam_pemeriksaan ASC LIMIT 5
+        WHERE DATE(p.tanggal_pendaftaran) = ? 
+        ORDER BY p.jam_pemeriksaan ASC LIMIT 5
     `;
   db.query(query, [today], (err, results) => {
     if (err) return res.status(500).json({ message: 'Database error' });
@@ -490,10 +527,6 @@ app.get('/api/dashboard/kunjungan-mingguan', (req, res) => {
     res.json(chartData);
   });
 });
-
-// ===================================
-// === API CRUD UNTUK JADWAL HARIAN === (PASTIKAN ANDA MENGGANTI BLOK YANG BENAR)
-// ===================================
 
 // GET /api/jadwalharian?tanggal=...
 app.get('/api/jadwalharian', (req, res) => {
@@ -561,6 +594,27 @@ app.post('/api/jadwalharian', (req, res) => {
       return res.status(500).json({ message: 'Gagal menyimpan jadwal ke database.' });
     }
     res.status(201).json({ message: 'Jadwal berhasil disimpan', id: result.insertId });
+  });
+});
+
+// PUT /api/jadwalharian/:id
+app.put('/api/jadwalharian/:id', (req, res) => {
+  const { id } = req.params;
+  const { status, jam_mulai, jam_selesai } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ message: 'Jadwal tidak ditemukan atau belum dibuat untuk hari ini. Silakan tambahkan terlebih dahulu.' });
+  }
+
+  db.query('UPDATE jadwal_harian SET status = ?, jam_mulai = ?, jam_selesai = ? WHERE id = ?', [status, jam_mulai, jam_selesai, id], (err, result) => {
+    if (err) {
+      console.error('Gagal memperbarui jadwal:', err);
+      return res.status(500).json({ message: 'Gagal memperbarui jadwal di database.' });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Jadwal tidak ditemukan.' });
+    }
+    res.status(200).json({ message: 'Jadwal berhasil diperbarui.' });
   });
 });
 
