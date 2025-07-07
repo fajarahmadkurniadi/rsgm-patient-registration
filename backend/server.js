@@ -55,6 +55,11 @@ const toMySQLDate = (dateStr) => {
     return null;
 };
 
+const dayMapping = {
+    0: 'Ming', 1: 'Sen', 2: 'Sel', 3: 'Rab',
+    4: 'Kam', 5: 'Jum', 6: 'Sab'
+};
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -86,15 +91,28 @@ const poliCodeMapping = {
     "Gigi Geriatri": "GT", "Bedah Mulut dan Maksilofasial": "BM"
 };
 
-// Endpoint Pendaftaran (Tidak ada perubahan)
+// Endpoint Pendaftaran (Dengan Perbaikan)
 app.post('/api/pendaftaran', (req, res) => {
   const { nik, namaLengkap, jenisKelamin, tanggalLahir, alamat, noHandphone, poli, hariTujuan, jamTujuan, keluhan } = req.body;
-  const hariPemeriksaan = new Date(hariTujuan + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long' });
+  
+  if (!hariTujuan) {
+      return res.status(400).json({ message: 'Tanggal tujuan pendaftaran tidak boleh kosong.' });
+  }
+
+  const dateObject = new Date(hariTujuan + 'T00:00:00');
+  const dayIndex = dateObject.getDay();
+  const hariSingkat = dayMapping[dayIndex];
+
+  if (!hariSingkat) {
+    return res.status(400).json({ message: 'Tanggal tujuan tidak valid.' });
+  }
 
   const queryCariDokter = "SELECT * FROM dokter WHERE spesialis = ? AND jadwal LIKE ? AND status = 'Aktif' LIMIT 1";
-  db.query(queryCariDokter, [poli, `%${hariPemeriksaan}%`], (err, dokterResults) => {
+  
+  db.query(queryCariDokter, [poli, `%${hariSingkat}%`], (err, dokterResults) => {
     if (err) return res.status(500).json({ message: 'Database error saat mencari dokter.', error: err });
-    if (dokterResults.length === 0) return res.status(404).json({ message: `Tidak ada dokter yang tersedia untuk poli ${poli} pada hari ${hariPemeriksaan}.` });
+    
+    if (dokterResults.length === 0) return res.status(404).json({ message: `Tidak ada dokter yang tersedia untuk poli ${poli} pada hari ${dateObject.toLocaleDateString('id-ID', { weekday: 'long' })}.` });
     
     const assignedDoctor = dokterResults[0];
 
@@ -139,15 +157,32 @@ app.post('/api/pendaftaran', (req, res) => {
         proceedToRegister(pasienResults[0].id, pasienResults[0].no_rm, 'Pasien Terdaftar');
       } else {
         const noRekamMedis = `RM${Math.floor(100000 + Math.random() * 900000)}`;
-        const pasienBaru = { nik, no_rm: noRekamMedis, nama_lengkap: namaLengkap, jenis_kelamin: jenisKelamin, tanggal_lahir: tanggalLahir, alamat, no_handphone: noHandphone, tanggal_pendaftaran: new Date() };
+        
+        // --- PERBAIKAN FINAL ---
+        // Mengubah `no_handphone` menjadi `no_hp` agar cocok dengan nama kolom di database Anda
+        const pasienBaru = { 
+            nik: nik, 
+            no_rm: noRekamMedis, 
+            nama_lengkap: namaLengkap, 
+            jenis_kelamin: jenisKelamin, 
+            tanggal_lahir: tanggalLahir, 
+            alamat: alamat, 
+            no_hp: noHandphone, // <-- NAMA FIELD DIPERBAIKI
+            tanggal_pendaftaran: new Date()
+        };
+        
         db.query('INSERT INTO pasien SET ?', pasienBaru, (err, result) => {
-          if (err) return res.status(500).json({ message: 'Gagal menyimpan data pasien baru.', error: err });
+          if (err) {
+              console.error("DATABASE ERROR SAAT INSERT PASIEN:", err); 
+              return res.status(500).json({ message: 'Gagal menyimpan data pasien baru.', error: err.sqlMessage || err.message });
+          }
           proceedToRegister(result.insertId, noRekamMedis, 'Pasien Baru');
         });
       }
     });
   });
 });
+
 
 // Endpoint Pesan (Tidak ada perubahan)
 app.post('/api/pesan', (req, res) => {
@@ -315,7 +350,7 @@ app.get('/api/dashboard/stats', (req, res) => {
   const today = new Date().toISOString().slice(0, 10);
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
-  const todayDayName = new Date().toLocaleDateString('id-ID', { weekday: 'long' });
+  const todayDayName = dayMapping[new Date().getDay()]; // Menggunakan mapping yang konsisten
 
   const q1 = 'SELECT COUNT(*) as count FROM pendaftaran WHERE tanggal_pendaftaran = ?';
   const q2 = 'SELECT COUNT(*) as count FROM pendaftaran WHERE MONTH(tanggal_pendaftaran) = ? AND YEAR(tanggal_pendaftaran) = ?';

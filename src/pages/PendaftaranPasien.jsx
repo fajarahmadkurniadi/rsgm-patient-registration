@@ -15,6 +15,9 @@ const PendaftaranPasien = () => {
     alamat: '',
     noHandphone: '',
     poli: '',
+    // --- PERBAIKAN DI SINI ---
+    // Menambahkan nilai awal untuk hariTujuan dan jamTujuan
+    hariTujuan: '',
     jamTujuan: '',
     keluhan: '',
     persetujuan: false,
@@ -29,12 +32,12 @@ const PendaftaranPasien = () => {
     }));
   };
 
-  // Handler saat form di-submit, sekarang menjadi async
+  // Handler saat form di-submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Validasi form kosong
-    const requiredFields = ['namaLengkap', 'nik', 'jenisKelamin', 'tanggalLahir', 'alamat', 'noHandphone', 'poli', 'jamTujuan', 'keluhan'];
+    const requiredFields = ['namaLengkap', 'nik', 'jenisKelamin', 'tanggalLahir', 'alamat', 'noHandphone', 'poli', 'hariTujuan', 'jamTujuan', 'keluhan'];
     for (const field of requiredFields) {
       if (!formData[field]) {
         alert('Harap isi semua kolom yang wajib diisi.');
@@ -67,11 +70,8 @@ const PendaftaranPasien = () => {
       const result = await response.json();
 
       if (response.ok) {
-        // Jika backend merespons sukses, navigasi ke halaman bukti pendaftaran
-        // dan kirim data yang mungkin sudah diproses oleh backend (termasuk No. Antrian, dll.)
         navigate('/buktipendaftaran', { state: { registrationData: result.data } });
       } else {
-        // Jika ada error dari backend (misal: NIK sudah terdaftar)
         alert(`Error: ${result.message}`);
       }
     } catch (error) {
