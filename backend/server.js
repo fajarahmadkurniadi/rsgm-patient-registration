@@ -3,6 +3,9 @@ const mysql = require('mysql');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require("socket.io");
+const path = require('path');
+const multer = require('multer');
+const fs = require('fs');
 
 const app = express();
 
@@ -10,12 +13,22 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
+// Membuat folder 'uploads' jika belum ada
+const uploadsDir = './uploads';
+if (!fs.existsSync(uploadsDir)){
+    fs.mkdirSync(uploadsDir);
+}
+
+// Middleware untuk menyajikan file statis dari folder 'uploads'
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
 // Buat server HTTP dan integrasikan dengan Socket.IO
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:5173", // Sesuaikan dengan port frontend Anda
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST", "PUT", "DELETE"]
   }
 });
 
@@ -35,6 +48,20 @@ db.connect(err => {
   console.log('Successfully connected to the MySQL database.');
 });
 
+// Konfigurasi penyimpanan untuk Multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // Folder penyimpanan file
+  },
+  filename: function (req, file, cb) {
+    // Membuat nama file yang unik (NIP-timestamp.ekstensi)
+    const nip = req.body.nip || 'doctor';
+    cb(null, nip + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
 // Listener untuk koneksi Socket.IO
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
@@ -51,11 +78,11 @@ const poliCodeMapping = {
     "Gigi Geriatri": "GT", "Bedah Mulut dan Maksilofasial": "BM"
 };
 
-// ===================================
-// === API ENDPOINTS (DENGAN SOCKET.IO) ===
-// ===================================
+// =========================================
+// === API ENDPOINTS (DENGAN MULTER & SOCKET.IO) ===
+// =========================================
 
-// Endpoint Pendaftaran
+// Endpoint Pendaftaran (Tidak berubah)
 app.post('/api/pendaftaran', (req, res) => {
   const { nik, namaLengkap, jenisKelamin, tanggalLahir, alamat, noHandphone, poli, hariTujuan, jamTujuan, keluhan } = req.body;
   const hariPemeriksaan = new Date(hariTujuan + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long' });
@@ -118,7 +145,7 @@ app.post('/api/pendaftaran', (req, res) => {
   });
 });
 
-// Endpoint Pesan
+// Endpoint Pesan (Tidak berubah)
 app.post('/api/pesan', (req, res) => {
     const { nama, email, pesan } = req.body;
     const tanggal = new Date().toISOString().split('T')[0];
@@ -132,6 +159,71 @@ app.post('/api/pesan', (req, res) => {
         
         res.sendStatus(201);
     });
+});
+
+// =============================
+// === API CRUD UNTUK DOKTER ===
+// =============================
+
+// GET: Mengambil semua dokter
+app.get('/api/dokter', (req, res) => { 
+    db.query('SELECT * FROM dokter', (err, results) => { 
+        if (err) res.status(500).send(err); 
+        else res.json(results); 
+    }); 
+});
+
+// POST: Menambah dokter baru dengan FOTO
+app.post('/api/dokter', upload.single('foto'), (req, res) => {
+    const newDoctorData = req.body;
+
+    if (req.file) {
+        // Simpan path relatif ke file, misal: 'uploads/doctor-1678886400000.jpg'
+        // Frontend akan menambahkan base URL (http://localhost:3001/)
+        newDoctorData.foto = req.file.path.replace(/\\/g, "/"); // Ganti backslash dengan slash untuk kompatibilitas
+    }
+
+    // Hapus properti temporary jika ada
+    delete newDoctorData.jadwal_hari;
+    delete newDoctorData.jadwal_awal;
+    delete newDoctorData.jadwal_akhir;
+
+    db.query('INSERT INTO dokter SET ?', newDoctorData, (err, result) => {
+        if (err) {
+            console.error("Gagal menambah dokter:", err);
+            return res.status(500).send(err);
+        }
+        res.status(201).json({ id: result.insertId, ...newDoctorData });
+    });
+});
+
+// PUT: Memperbarui data dokter dengan FOTO
+app.put('/api/dokter/:id', upload.single('foto'), (req, res) => {
+    const { id } = req.params;
+    const updatedDoctorData = req.body;
+
+    if (req.file) {
+        // Jika ada file baru diunggah, perbarui path fotonya
+        updatedDoctorData.foto = req.file.path.replace(/\\/g, "/");
+    }
+
+    db.query('UPDATE dokter SET ? WHERE id = ?', [updatedDoctorData, id], (err) => {
+        if (err) {
+            console.error("Gagal memperbarui dokter:", err);
+            return res.status(500).send(err);
+        }
+        res.sendStatus(200);
+    });
+});
+
+
+// DELETE: Menghapus dokter
+app.delete('/api/dokter/:id', (req, res) => { 
+    const { id } = req.params; 
+    db.query('DELETE FROM dokter WHERE id = ?', id, (err) => { 
+        if (err) res.status(500).send(err); 
+        else res.sendStatus(200); 
+    }); 
 });
 
 
@@ -161,11 +253,6 @@ app.get('/api/riwayat', (req, res) => {
         res.status(200).json(results);
     });
 });
-
-app.get('/api/dokter', (req, res) => { db.query('SELECT * FROM dokter', (err, results) => { if (err) res.status(500).send(err); else res.json(results); }); });
-app.post('/api/dokter', (req, res) => { const newDoctor = req.body; db.query('INSERT INTO dokter SET ?', newDoctor, (err, result) => { if (err) res.status(500).send(err); else res.status(201).json({ id: result.insertId, ...newDoctor }); }); });
-app.put('/api/dokter/:id', (req, res) => { const { id } = req.params; const updatedDoctor = req.body; db.query('UPDATE dokter SET ? WHERE id = ?', [updatedDoctor, id], (err) => { if (err) res.status(500).send(err); else res.sendStatus(200); }); });
-app.delete('/api/dokter/:id', (req, res) => { const { id } = req.params; db.query('DELETE FROM dokter WHERE id = ?', id, (err) => { if (err) res.status(500).send(err); else res.sendStatus(200); }); });
 
 app.get('/api/pesan', (req, res) => { db.query('SELECT *, DATE_FORMAT(tanggal, "%d/%m/%Y") as tanggal_formatted FROM pesan ORDER BY id DESC', (err, results) => { if (err) res.status(500).send(err); else { const formatted = results.map(m => ({...m, tanggal: m.tanggal_formatted})); res.json(formatted); } }); });
 

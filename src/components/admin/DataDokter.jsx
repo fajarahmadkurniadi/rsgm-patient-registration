@@ -2,21 +2,15 @@ import React, { useState, useEffect } from 'react';
 import Clock from './Clock';
 import AddDoctorOverlay from './AddDoctorOverlay';
 import DoctorDetailOverlay from './DoctorDetailOverlay';
-import searchIcon from '../../assets/Icon/Search.webp'; // Impor ikon search
+import searchIcon from '../../assets/Icon/Search.webp';
 
 const DataDokter = () => {
-  // State sekarang dimulai dengan array kosong, akan diisi dari API
   const [allDoctorData, setAllDoctorData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-
-  // State untuk filter
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // State untuk mengontrol visibilitas overlays
   const [showAddOverlay, setShowAddOverlay] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
 
-  // Fungsi untuk mengambil data dokter dari API
   const fetchDoctors = async () => {
     try {
       const response = await fetch('http://localhost:3001/api/dokter');
@@ -25,18 +19,16 @@ const DataDokter = () => {
       }
       const data = await response.json();
       setAllDoctorData(data);
-      setFilteredData(data); // Inisialisasi data yang difilter
+      setFilteredData(data);
     } catch (error) {
       console.error("Gagal mengambil data dokter:", error);
     }
   };
 
-  // Gunakan useEffect untuk mengambil data saat komponen pertama kali dimuat
   useEffect(() => {
     fetchDoctors();
   }, []);
 
-  // useEffect untuk memfilter data setiap kali ada perubahan pada pencarian atau data utama
   useEffect(() => {
     let data = [...allDoctorData];
     if (searchTerm) {
@@ -48,28 +40,40 @@ const DataDokter = () => {
     setFilteredData(data);
   }, [searchTerm, allDoctorData]);
 
-  // --- Fungsi CRUD (Create, Read, Update, Delete) yang memanggil API ---
+  // --- FUNGSI CRUD YANG DIPERBARUI ---
+
   const handleAddDoctor = async (newDoctor) => {
+    // Membuat objek FormData untuk mengirim file dan data teks
+    const formData = new FormData();
+    for (const key in newDoctor) {
+      formData.append(key, newDoctor[key]);
+    }
+
     try {
-        await fetch('http://localhost:3001/api/dokter', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newDoctor)
-        });
-        fetchDoctors(); // Ambil ulang data untuk refresh tabel
-        setShowAddOverlay(false);
+      // Saat mengirim FormData, browser akan otomatis mengatur Content-Type
+      await fetch('http://localhost:3001/api/dokter', {
+        method: 'POST',
+        body: formData, // Kirimkan formData
+      });
+      fetchDoctors(); // Refresh tabel
+      setShowAddOverlay(false);
     } catch (error) { 
-        console.error("Gagal menambah dokter:", error);
-        alert("Gagal menambah dokter. Silakan coba lagi.");
+      console.error("Gagal menambah dokter:", error);
+      alert("Gagal menambah dokter. Silakan coba lagi.");
     }
   };
   
   const handleUpdateDoctor = async (updatedDoctor) => {
+    const formData = new FormData();
+    // Loop melalui data dokter dan tambahkan ke formData
+    for (const key in updatedDoctor) {
+        formData.append(key, updatedDoctor[key]);
+    }
+    
     try {
         await fetch(`http://localhost:3001/api/dokter/${updatedDoctor.id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedDoctor)
+            body: formData, // Kirim sebagai FormData
         });
         fetchDoctors(); // Refresh data
     } catch (error) { 

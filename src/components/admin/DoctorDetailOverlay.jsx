@@ -8,33 +8,45 @@ import saveIcon from '../../assets/Icon/Simpan Data.webp';
 import cameraIcon from '../../assets/Icon/add photo.webp';
 import doctorPlaceholder from '../../assets/Icon/doctor_placeholder.png';
 
-// --- (Fungsi helper tanggal tetap sama) ---
+// URL dasar dari server backend Anda
+const API_URL = 'http://localhost:3001';
+
 const formatDateForInput = (dateStr) => {
-  if (!dateStr || dateStr.split('/').length !== 3) return '';
+  if (!dateStr || !String(dateStr).includes('/')) return dateStr;
   const [day, month, year] = dateStr.split('/');
   return `${year}-${month}-${day}`;
 };
 
 const formatDateForStorage = (dateStr) => {
-  if (!dateStr) return '';
+  if (!dateStr || !String(dateStr).includes('-')) return dateStr;
   const [year, month, day] = dateStr.split('-');
   return `${day}/${month}/${year}`;
 };
 
 const DoctorDetailOverlay = ({ doctor, onClose, onUpdate, onDelete }) => {
-  // ... (semua state dan handler lain tetap sama) ...
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState({ ...doctor });
   const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const fileInputRef = useRef(null);
-  const [photoPreview, setPhotoPreview] = useState(() => {
-    if (doctor.foto && typeof doctor.foto === 'object') {
-      return URL.createObjectURL(doctor.foto);
-    }
-    return doctor.foto;
-  });
+  
+  // State untuk preview gambar
+  const [photoPreview, setPhotoPreview] = useState(null);
+  
   const [schedule, setSchedule] = useState({ days: [], start: '', end: '' });
+
+  // Fungsi untuk mendapatkan URL gambar yang valid
+  const getImageUrl = (fotoPath) => {
+    if (!fotoPath) {
+        return doctorPlaceholder;
+    }
+    if (typeof fotoPath === 'string') {
+        // Jika path dari database, gabungkan dengan URL server
+        return `${API_URL}/${fotoPath}`;
+    }
+    // Jika foto adalah objek File dari preview
+    return URL.createObjectURL(fotoPath);
+  };
 
   useEffect(() => {
     if (isEditing) {
@@ -45,8 +57,10 @@ const DoctorDetailOverlay = ({ doctor, onClose, onUpdate, onDelete }) => {
         const daysArray = daysRaw.split(',').map(d => d.trim()).filter(Boolean);
         setSchedule({ days: daysArray, start: match[2], end: match[3] });
       }
+      // Set initial preview dari data dokter yang ada
+      setPhotoPreview(doctor.foto ? getImageUrl(doctor.foto) : doctorPlaceholder);
     }
-  }, [isEditing, doctor.jadwal]);
+  }, [isEditing, doctor.jadwal, doctor.foto]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -71,8 +85,8 @@ const DoctorDetailOverlay = ({ doctor, onClose, onUpdate, onDelete }) => {
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setEditedData(prev => ({ ...prev, foto: file }));
-      setPhotoPreview(URL.createObjectURL(file));
+      setEditedData(prev => ({ ...prev, foto: file })); // Simpan object File untuk diunggah
+      setPhotoPreview(URL.createObjectURL(file)); // Buat URL preview
     }
   };
 
@@ -90,6 +104,8 @@ const DoctorDetailOverlay = ({ doctor, onClose, onUpdate, onDelete }) => {
     }
 
     const jadwalString = `${schedule.days.join(', ')} (${schedule.start} - ${schedule.end})`;
+    
+    // Siapkan data final untuk dikirim
     const finalData = {
         ...editedData,
         jadwal: jadwalString,
@@ -97,14 +113,17 @@ const DoctorDetailOverlay = ({ doctor, onClose, onUpdate, onDelete }) => {
             ? formatDateForStorage(editedData.tanggal_lahir) 
             : editedData.tanggal_lahir,
     };
+    
+    // Perbarui state lokal sebelum dikirim
     setEditedData(finalData);
     setShowSaveConfirmation(true);
   };
   
   const handleConfirmSave = () => {
-    onUpdate(editedData);
+    onUpdate(editedData); // Kirim state `editedData` yang sudah berisi file jika ada
     setShowSaveConfirmation(false);
   };
+  
   const handleCancelSave = () => setShowSaveConfirmation(false);
   const handleDeleteClick = () => setShowDeleteConfirmation(true);
   const handleConfirmDelete = () => onDelete(doctor.id);
@@ -126,13 +145,12 @@ const DoctorDetailOverlay = ({ doctor, onClose, onUpdate, onDelete }) => {
               <div className="dd-edit-content">
                 <div className="dd-edit-photo-section">
                   <div className="dd-edit-photo-placeholder" onClick={handlePhotoClick}>
-                    {photoPreview ? (<img src={photoPreview} alt="Preview" className="dd-edit-photo-preview" />) : (<img src={cameraIcon} alt="Upload" />)}
+                    <img src={photoPreview || cameraIcon} alt="Preview" className="dd-edit-photo-preview" />
                   </div>
                   <input type="file" ref={fileInputRef} onChange={handlePhotoChange} style={{ display: 'none' }} accept="image/*" />
                 </div>
                 <div className="dd-edit-form-row"><label>Nama Lengkap</label><input type="text" name="nama" value={editedData.nama} onChange={handleInputChange} /></div>
                 
-                {/* --- PERBAIKAN ADA DI SINI --- */}
                 <div className="dd-edit-form-row">
                   <label>Spesialis</label>
                   <select name="spesialis" value={editedData.spesialis} onChange={handleInputChange}>
@@ -172,7 +190,7 @@ const DoctorDetailOverlay = ({ doctor, onClose, onUpdate, onDelete }) => {
                 <button className="dd-btn-close" onClick={onClose}><img src={closeIcon} alt="Close" /></button>
               </div>
               <div className="dd-view-content">
-                <img src={doctor.foto && typeof doctor.foto === 'object' ? URL.createObjectURL(doctor.foto) : doctorPlaceholder} alt={doctor.nama} className="dd-profile-photo" />
+                <img src={getImageUrl(doctor.foto)} alt={doctor.nama} className="dd-profile-photo" />
                 <h3 className="dd-doctor-name">{doctor.nama}</h3>
                 <p className="dd-doctor-specialty">{doctor.spesialis}</p>
                 <table className="dd-info-table">
