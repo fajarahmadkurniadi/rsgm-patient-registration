@@ -13,26 +13,20 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// Membuat folder 'uploads' jika belum ada
 const uploadsDir = './uploads';
 if (!fs.existsSync(uploadsDir)){
     fs.mkdirSync(uploadsDir);
 }
-
-// Middleware untuk menyajikan file statis dari folder 'uploads'
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-
-// Buat server HTTP dan integrasikan dengan Socket.IO
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173", // Sesuaikan dengan port frontend Anda
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"]
   }
 });
 
-// Konfigurasi Koneksi Database MySQL
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -48,21 +42,27 @@ db.connect(err => {
   console.log('Successfully connected to the MySQL database.');
 });
 
-// Konfigurasi penyimpanan untuk Multer
+// **BAGIAN YANG DIPERBAIKI: Konfigurasi Multer**
+// Kita pindahkan konfigurasi 'filename' ke dalam fungsi upload itu sendiri
+// agar kita bisa mengakses req.body
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // Folder penyimpanan file
-  },
-  filename: function (req, file, cb) {
-    // Membuat nama file yang unik (NIP-timestamp.ekstensi)
-    const nip = req.body.nip || 'doctor';
-    cb(null, nip + '-' + Date.now() + path.extname(file.originalname));
+    cb(null, 'uploads/');
   }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ 
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    // Menambahkan filter untuk hanya menerima file gambar
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Hanya file gambar yang diizinkan!'), false);
+    }
+  }
+});
 
-// Listener untuk koneksi Socket.IO
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
   socket.on('disconnect', () => {
@@ -70,7 +70,6 @@ io.on('connection', (socket) => {
   });
 });
 
-// --- PEMETAAN KODE POLI ---
 const poliCodeMapping = {
     "Gigi Umum": "GU", "Ortodonti": "OR", "Gigi Anak": "KA", "Endodonti": "EN",
     "Prosthodonsia": "PS", "Konservasi Gigi": "KG", "Penyakit Mulut": "PM",
@@ -78,10 +77,7 @@ const poliCodeMapping = {
     "Gigi Geriatri": "GT", "Bedah Mulut dan Maksilofasial": "BM"
 };
 
-// =========================================
-// === API ENDPOINTS (DENGAN MULTER & SOCKET.IO) ===
-// =========================================
-
+// ... (Endpoint pendaftaran & pesan tidak berubah) ...
 // Endpoint Pendaftaran (Tidak berubah)
 app.post('/api/pendaftaran', (req, res) => {
   const { nik, namaLengkap, jenisKelamin, tanggalLahir, alamat, noHandphone, poli, hariTujuan, jamTujuan, keluhan } = req.body;
@@ -161,76 +157,90 @@ app.post('/api/pesan', (req, res) => {
     });
 });
 
+
 // =============================
 // === API CRUD UNTUK DOKTER ===
 // =============================
 
-// GET: Mengambil semua dokter
 app.get('/api/dokter', (req, res) => { 
-    db.query('SELECT * FROM dokter', (err, results) => { 
-        if (err) res.status(500).send(err); 
+    db.query('SELECT * FROM dokter ORDER BY id DESC', (err, results) => { 
+        if (err) res.status(500).json({ message: "Database error", error: err });
         else res.json(results); 
     }); 
 });
 
-// POST: Menambah dokter baru dengan FOTO
+// **POST: DIPERBAIKI**
 app.post('/api/dokter', upload.single('foto'), (req, res) => {
     const newDoctorData = req.body;
+    const { nip } = newDoctorData;
 
-    if (req.file) {
-        // Simpan path relatif ke file, misal: 'uploads/doctor-1678886400000.jpg'
-        // Frontend akan menambahkan base URL (http://localhost:3001/)
-        newDoctorData.foto = req.file.path.replace(/\\/g, "/"); // Ganti backslash dengan slash untuk kompatibilitas
-    }
+    // Cek dulu apakah NIP sudah ada
+    db.query('SELECT id FROM dokter WHERE nip = ?', [nip], (err, results) => {
+      if (err) {
+        console.error("Database error saat cek NIP:", err);
+        return res.status(500).json({ message: "Terjadi kesalahan pada server." });
+      }
+      if (results.length > 0) {
+        return res.status(409).json({ message: `Dokter dengan NIP ${nip} sudah terdaftar.` });
+      }
 
-    // Hapus properti temporary jika ada
-    delete newDoctorData.jadwal_hari;
-    delete newDoctorData.jadwal_awal;
-    delete newDoctorData.jadwal_akhir;
+      // Jika ada file yang diunggah, proses namanya
+      if (req.file) {
+          const oldPath = req.file.path;
+          const newFileName = `${nip}-${Date.now()}${path.extname(req.file.originalname)}`;
+          const newPath = path.join(uploadsDir, newFileName);
+          
+          // Rename file agar sesuai dengan NIP
+          fs.renameSync(oldPath, newPath);
+          newDoctorData.foto = `uploads/${newFileName}`;
+      }
 
-    db.query('INSERT INTO dokter SET ?', newDoctorData, (err, result) => {
-        if (err) {
-            console.error("Gagal menambah dokter:", err);
-            return res.status(500).send(err);
-        }
-        res.status(201).json({ id: result.insertId, ...newDoctorData });
+      db.query('INSERT INTO dokter SET ?', newDoctorData, (err, result) => {
+          if (err) {
+              console.error("Gagal menambah dokter:", err);
+              // Hapus file yang sudah terunggah jika insert database gagal
+              if (req.file) fs.unlinkSync(newDoctorData.foto);
+              return res.status(500).json({ message: "Gagal menyimpan data ke database." });
+          }
+          res.status(201).json({ id: result.insertId, ...newDoctorData });
+      });
     });
 });
 
-// PUT: Memperbarui data dokter dengan FOTO
+
+// **PUT: DIPERBAIKI**
 app.put('/api/dokter/:id', upload.single('foto'), (req, res) => {
     const { id } = req.params;
     const updatedDoctorData = req.body;
+    const { nip } = updatedDoctorData;
 
     if (req.file) {
-        // Jika ada file baru diunggah, perbarui path fotonya
-        updatedDoctorData.foto = req.file.path.replace(/\\/g, "/");
+        const oldPath = req.file.path;
+        const newFileName = `${nip}-${Date.now()}${path.extname(req.file.originalname)}`;
+        const newPath = path.join(uploadsDir, newFileName);
+        fs.renameSync(oldPath, newPath);
+        updatedDoctorData.foto = `uploads/${newFileName}`;
     }
 
     db.query('UPDATE dokter SET ? WHERE id = ?', [updatedDoctorData, id], (err) => {
         if (err) {
             console.error("Gagal memperbarui dokter:", err);
-            return res.status(500).send(err);
+            return res.status(500).json({ message: "Gagal memperbarui data di database." });
         }
-        res.sendStatus(200);
+        res.status(200).json({ message: "Data dokter berhasil diperbarui." });
     });
 });
 
-
-// DELETE: Menghapus dokter
 app.delete('/api/dokter/:id', (req, res) => { 
     const { id } = req.params; 
     db.query('DELETE FROM dokter WHERE id = ?', id, (err) => { 
-        if (err) res.status(500).send(err); 
-        else res.sendStatus(200); 
+        if (err) return res.status(500).json({ message: 'Gagal menghapus data dari database.' });
+        res.status(200).json({ message: 'Data dokter berhasil dihapus.' });
     }); 
 });
 
 
-// ===================================
-// === SEMUA API LAINNYA (READ-ONLY) ===
-// ===================================
-
+// ... (Sisa API lainnya tidak berubah) ...
 app.get('/api/pasien', (req, res) => {
     const query = 'SELECT *, DATE_FORMAT(tanggal_lahir, "%d/%m/%Y") as tanggal_lahir_formatted, DATE_FORMAT(tanggal_pendaftaran, "%d/%m/%Y") as tanggal_daftar_formatted FROM pasien';
     db.query(query, (err, results) => {
@@ -313,7 +323,6 @@ app.get('/api/dashboard/kunjungan-mingguan', (req, res) => {
     });
 });
 
-// --- API UNTUK LOGIN ADMIN ---
 const adminAccounts = [
   { email: 'fajarahmadkurniadi@gmail.com', password: 'adminrsgm123' },
   { email: 'fakhriskroep@gmail.com', password: 'adminrsgm123' },
@@ -326,7 +335,6 @@ app.post('/loginadmin', (req, res) => {
   else res.status(401).json({ message: 'Invalid email or password' });
 });
 
-// Menjalankan server
 const PORT = 3001;
 httpServer.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

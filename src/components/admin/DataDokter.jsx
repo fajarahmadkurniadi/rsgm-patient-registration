@@ -19,7 +19,6 @@ const DataDokter = () => {
       }
       const data = await response.json();
       setAllDoctorData(data);
-      setFilteredData(data);
     } catch (error) {
       console.error("Gagal mengambil data dokter:", error);
     }
@@ -43,56 +42,77 @@ const DataDokter = () => {
   // --- FUNGSI CRUD YANG DIPERBARUI ---
 
   const handleAddDoctor = async (newDoctor) => {
-    // Membuat objek FormData untuk mengirim file dan data teks
     const formData = new FormData();
     for (const key in newDoctor) {
       formData.append(key, newDoctor[key]);
     }
 
     try {
-      // Saat mengirim FormData, browser akan otomatis mengatur Content-Type
-      await fetch('http://localhost:3001/api/dokter', {
+      const response = await fetch('http://localhost:3001/api/dokter', {
         method: 'POST',
-        body: formData, // Kirimkan formData
+        body: formData,
       });
-      fetchDoctors(); // Refresh tabel
+
+      // **BAGIAN YANG DIPERBAIKI: Cek respons server**
+      if (!response.ok) {
+        // Jika server mengembalikan error, tampilkan pesan dan jangan lanjutkan
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Gagal menambah dokter.');
+      }
+
+      // Jika berhasil, muat ulang data dan tutup overlay
+      fetchDoctors();
       setShowAddOverlay(false);
+      
     } catch (error) { 
       console.error("Gagal menambah dokter:", error);
-      alert("Gagal menambah dokter. Silakan coba lagi.");
+      alert(error.message); // Tampilkan pesan error yang lebih spesifik
     }
   };
   
   const handleUpdateDoctor = async (updatedDoctor) => {
     const formData = new FormData();
-    // Loop melalui data dokter dan tambahkan ke formData
     for (const key in updatedDoctor) {
         formData.append(key, updatedDoctor[key]);
     }
     
     try {
-        await fetch(`http://localhost:3001/api/dokter/${updatedDoctor.id}`, {
+        const response = await fetch(`http://localhost:3001/api/dokter/${updatedDoctor.id}`, {
             method: 'PUT',
-            body: formData, // Kirim sebagai FormData
+            body: formData,
         });
-        fetchDoctors(); // Refresh data
+
+        // **BAGIAN YANG DIPERBAIKI: Cek respons server**
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Gagal memperbarui data.');
+        }
+
+        fetchDoctors();
+        setSelectedDoctor(null);
     } catch (error) { 
         console.error("Gagal update dokter:", error);
-        alert("Gagal memperbarui data dokter. Silakan coba lagi.");
-    } finally {
-        setSelectedDoctor(null);
+        alert(error.message);
     }
   };
 
   const handleDeleteDoctor = async (doctorId) => {
     try {
-        await fetch(`http://localhost:3001/api/dokter/${doctorId}`, { method: 'DELETE' });
-        fetchDoctors(); // Refresh data
+        const response = await fetch(`http://localhost:3001/api/dokter/${doctorId}`, { 
+          method: 'DELETE' 
+        });
+
+        // **BAGIAN YANG DIPERBAIKI: Cek respons server**
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Gagal menghapus data.');
+        }
+        
+        fetchDoctors();
+        setSelectedDoctor(null);
     } catch (error) { 
         console.error("Gagal menghapus dokter:", error);
-        alert("Gagal menghapus dokter. Silakan coba lagi.");
-    } finally {
-        setSelectedDoctor(null);
+        alert(error.message);
     }
   };
 

@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 
 // Import semua komponen dan aset Anda
 import notificationImg from "../../assets/Dashboard/Notification Logo - Before.webp";
-import notificationAfterImg from "../../assets/Dashboard/Notification After.png";
+import notificationAfterImg from "../../assets/Dashboard/Notification Logo - After.webp";
 import pendaftaranHariIniImg from "../../assets/Dashboard/Pendaftaran Hari ini - Dashboard.webp";
 import pasienBulanIniImg from "../../assets/Dashboard/Pasien Bulan ini - Dashboard.webp";
 import dokterAktifImg from "../../assets/Dashboard/Dokter Aktif - Dashboard.webp";
