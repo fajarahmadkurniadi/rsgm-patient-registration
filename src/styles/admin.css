@@ -2087,7 +2087,7 @@
 }
 
 .rp-table-container {
-  overflow-y: auto; /* Membuat tabel bisa scroll vertikal */
+  overflow-x: auto; /* Aktifkan scroll horizontal jika tabel terlalu lebar */
   border: 1px solid #d1d2d3;
   border-radius: 8px;
   flex-grow: 1;
@@ -2096,18 +2096,48 @@
 .rp-table-container table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed; /* Kunci: Memaksa lebar kolom agar konsisten */
 }
 
 .rp-table-container th,
 .rp-table-container td {
-  /* Padding dibuat lebih kecil */
-  padding: 0.8rem;
+  padding: 0.8rem 1rem;
   text-align: left;
   border-bottom: 1px solid #eaeaea;
-  /* Ukuran font diperkecil */
   font-size: 14px;
-  white-space: nowrap;
+  white-space: normal; /* Izinkan teks untuk turun baris */
+  word-wrap: break-word; /* Pecah kata jika terlalu panjang untuk mencegah overflow */
+  vertical-align: middle; /* Jaga konten tetap di tengah secara vertikal */
 }
+
+/* --- PENGATURAN LEBAR KOLOM (BARU) --- */
+.rp-table-container th:nth-child(1) {
+  width: 5%;
+} /* No. */
+.rp-table-container th:nth-child(2) {
+  width: 10%;
+} /* Tanggal */
+.rp-table-container th:nth-child(3) {
+  width: 10%;
+} /* No. Antrian */
+.rp-table-container th:nth-child(4) {
+  width: 15%;
+} /* Nama Pasien */
+.rp-table-container th:nth-child(5) {
+  width: 15%;
+} /* NIK */
+.rp-table-container th:nth-child(6) {
+  width: 12%;
+} /* Poli Tujuan */
+.rp-table-container th:nth-child(7) {
+  width: 10%;
+} /* Jam Daftar - Diperlebar */
+.rp-table-container th:nth-child(8) {
+  width: 13%;
+} /* Status Pasien - Diperlebar */
+.rp-table-container th:nth-child(9) {
+  width: 13%;
+} /* Aksi */
 
 .rp-table-container th {
   background-color: #f9f9f9;
@@ -2116,8 +2146,7 @@
   top: 0;
 }
 
-.rp-table-container tr:last-child td {
-  border-bottom: none;
+.rp-table-container td:last-child {
   text-align: center;
 }
 

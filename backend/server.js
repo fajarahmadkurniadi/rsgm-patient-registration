@@ -176,7 +176,7 @@ app.post('/api/pendaftaran', (req, res) => {
           const pendaftaranData = {
             pasien_id: pasienId,
             dokter_id: assignedDoctor.id,
-            tanggal_pendaftaran: hariTujuan, // Ini sudah dalam format YYYY-MM-DD
+            // tanggal_pendaftaran: hariTujuan, // Ini sudah dalam format YYYY-MM-DD
             jam_pemeriksaan: jamTujuan,
             poli_tujuan: poli,
             keluhan,
@@ -395,8 +395,7 @@ app.get('/api/riwayat', (req, res) => {
 
   let query = `
       SELECT p.id_pendaftaran as id, 
-             p.tanggal_pendaftaran as tanggal_raw, 
-             DATE_FORMAT(p.tanggal_pendaftaran, "%d/%m/%Y") as tanggal,
+             p.tanggal_pendaftaran as tanggal, 
              p.nomor_antrian, 
              ps.nama_lengkap as nama, 
              ps.nik, 
@@ -540,16 +539,27 @@ app.get('/api/jadwalharian', (req, res) => {
   const shortDayName = ['Ming', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'][localDate.getDay()];
 
   let query = `
-      SELECT 
-          d.id as dokter_id, d.nama, d.nip, d.spesialis, d.jadwal,
-          jh.id, COALESCE(jh.tanggal, ?) as tanggal, 
-          COALESCE(jh.status, 'Hadir') as status,
-          COALESCE(jh.jam_mulai, TIME(SUBSTRING_INDEX(SUBSTRING_INDEX(d.jadwal, '(', -1), '-', 1))) as jam_mulai,
-          COALESCE(jh.jam_selesai, TIME(SUBSTRING_INDEX(SUBSTRING_INDEX(d.jadwal, ')', 1), '-', -1))) as jam_selesai
-      FROM dokter d
-      LEFT JOIN jadwal_harian jh ON d.id = jh.dokter_id AND jh.tanggal = ?
-      WHERE d.jadwal LIKE ? AND d.status = 'Aktif'
-  `;
+    SELECT 
+        d.id as dokter_id, d.nama, d.nip, d.spesialis, d.jadwal,
+        jh.id, COALESCE(jh.tanggal, ?) as tanggal, 
+        COALESCE(jh.status, 'Hadir') as status,
+
+
+        COALESCE(
+            DATE_FORMAT(jh.jam_mulai, '%H:%i'), 
+            CONCAT(TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(d.jadwal, '(', -1), '-', 1)), ':00')
+        ) as jam_mulai,
+
+ 
+        COALESCE(
+            DATE_FORMAT(jh.jam_selesai, '%H:%i'),
+            CONCAT(TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(d.jadwal, ')', 1), '-', -1)), ':00')
+        ) as jam_selesai
+
+    FROM dokter d
+    LEFT JOIN jadwal_harian jh ON d.id = jh.dokter_id AND jh.tanggal = ?
+    WHERE d.jadwal LIKE ? AND d.status = 'Aktif'
+`;
   const queryParams = [tanggal, tanggal, `%${shortDayName}%`];
 
   if (spesialis) {

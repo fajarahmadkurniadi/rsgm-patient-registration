@@ -60,6 +60,17 @@ const RiwayatPendaftaran = () => {
     return '';
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    // Buat objek Date dan pastikan interpretasi sebagai UTC untuk konsistensi
+    const date = new Date(dateString);
+    return date.toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  };
+
   return (
     <>
       <div id="riwayat-pendaftaran">
@@ -102,7 +113,7 @@ const RiwayatPendaftaran = () => {
                   history.map((item, index) => (
                     <tr key={item.id}>
                       <td>{index + 1}.</td>
-                      <td>{item.tanggal}</td>
+                      <td>{formatDate(item.tanggal)}</td>
                       <td>{item.no_antrian}</td>
                       <td>{item.nama}</td>
                       <td>{item.nik}</td>
