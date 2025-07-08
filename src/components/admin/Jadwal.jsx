@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Clock from './Clock';
 import AddScheduleOverlay from './AddScheduleOverlay';
 import EditScheduleOverlay from './EditScheduleOverlay';
@@ -7,102 +7,113 @@ import searchIcon from '../../assets/Icon/Search.webp';
 import deleteIcon from '../../assets/Icon/Hapus Data.webp';
 import editIcon from '../../assets/Icon/Edit Data.webp';
 
-// Data dummy sudah dihapus
-
 const specialistOptions = [
-    "Ortodonti", "Bedah Mulut", "Gigi Umum", "Konservasi Gigi",
-    "Prosthodonsia", "Kesehatan Gigi Anak", "Periodonsia", "Endodonti",
-    "Penyakit Mulut", "Radiologi Gigi dan Mulut", "Gigi Estetika dan Kosmetik", "Gigi Geriatri"
+  'Ortodonti',
+  'Bedah Mulut',
+  'Gigi Umum',
+  'Konservasi Gigi',
+  'Prosthodonsia',
+  'Kesehatan Gigi Anak',
+  'Periodonsia',
+  'Endodonti',
+  'Penyakit Mulut',
+  'Radiologi Gigi dan Mulut',
+  'Gigi Estetika dan Kosmetik',
+  'Gigi Geriatri',
 ];
 
 const Jadwal = () => {
-  // State untuk data utama (dari API) dan yang ditampilkan
-  const [allSchedules, setAllSchedules] = useState([]); // Dimulai dengan array kosong
+  const [allDoctorList, setAllDoctorList] = useState([]);
   const [schedules, setSchedules] = useState([]);
-
-  // State untuk semua filter
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
-
-  // State untuk total harian
-  const [dailyTotal, setDailyTotal] = useState(0);
-
-  // State untuk mengontrol semua overlays
   const [showAddSchedule, setShowAddSchedule] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(null);
   const [deletingScheduleId, setDeletingScheduleId] = useState(null);
 
-  // Fungsi untuk mengambil data dokter dari API
-  const fetchSchedules = async () => {
+  const fetchDoctors = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/dokter'); // Mengambil dari data dokter
-      if (!response.ok) {
-        throw new Error('Gagal mengambil data jadwal');
-      }
+      const response = await fetch('http://localhost:3001/api/dokter');
+      if (!response.ok) throw new Error('Gagal mengambil daftar dokter');
       const data = await response.json();
-      setAllSchedules(data); // Simpan semua data dokter/jadwal
+      setAllDoctorList(data);
     } catch (error) {
-      console.error("Gagal mengambil data:", error);
+      console.error(error);
     }
-  };
-
-  // Mengambil data saat komponen pertama kali dimuat
-  useEffect(() => {
-    fetchSchedules();
   }, []);
 
-  // Fungsi untuk mendapatkan nama hari dari tanggal
-  const getDayName = (date) => {
-    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    return days[new Date(date + 'T00:00:00').getDay()];
-  };
+  const fetchSchedulesForDate = useCallback(async () => {
+    if (!selectedDate) return;
+    try {
+      const params = new URLSearchParams({
+        tanggal: selectedDate,
+        spesialis: selectedSpecialty,
+        search: searchTerm,
+      });
+      const response = await fetch(`http://localhost:3001/api/jadwalharian?${params}`);
+      if (!response.ok) throw new Error(`Gagal mengambil jadwal untuk tanggal ${selectedDate}`);
+      const data = await response.json();
+      setSchedules(data);
+    } catch (error) {
+      console.error(error);
+      setSchedules([]);
+    }
+  }, [selectedDate, selectedSpecialty, searchTerm]);
 
-  // --- FUNGSI CRUD (Create, Read, Update, Delete) ---
-  const handleAddSchedule = (newSchedule) => {
-    // Di aplikasi nyata, ini akan menjadi POST request ke API untuk membuat jadwal baru
-    // Untuk simulasi, kita refresh data dokter karena jadwal ada di sana
-    fetchSchedules();
-    setShowAddSchedule(false);
-  };
-
-  const handleUpdateSchedule = (updatedSchedule) => {
-    // Panggil API untuk update, lalu fetch ulang
-    fetchSchedules();
-    setEditingSchedule(null);
-  };
-
-  const handleDeleteSchedule = () => {
-    // Panggil API untuk delete, lalu fetch ulang
-    fetchSchedules();
-    setDeletingScheduleId(null);
-  };
-
-  // useEffect untuk memfilter data setiap kali ada perubahan
   useEffect(() => {
-    let data = [...allSchedules];
+    fetchDoctors();
+  }, [fetchDoctors]);
 
-    if (selectedDate) {
-      const dayName = getDayName(selectedDate);
-      data = data.filter(doc => doc.jadwal && doc.jadwal.includes(dayName));
+  useEffect(() => {
+    fetchSchedulesForDate();
+  }, [fetchSchedulesForDate]);
+
+  const handleAddSchedule = async (newScheduleData) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/jadwalharian', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newScheduleData),
+      });
+      if (!response.ok) throw new Error('Gagal menambah jadwal');
+      fetchSchedulesForDate();
+      setShowAddSchedule(false);
+    } catch (error) {
+      console.error(error);
+      alert('Gagal menyimpan jadwal baru.');
     }
+  };
 
-    if (selectedSpecialty) {
-      data = data.filter(doc => doc.spesialis === selectedSpecialty);
+  const handleUpdateSchedule = async (updatedSchedule) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/jadwalharian/${updatedSchedule.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedSchedule),
+      });
+      if (!response.ok) throw new Error('Gagal memperbarui jadwal');
+      fetchSchedulesForDate();
+      setEditingSchedule(null);
+    } catch (error) {
+      console.error(error);
+      alert('Gagal memperbarui jadwal.');
     }
+  };
 
-    setDailyTotal(data.length);
-
-    if (searchTerm) {
-      data = data.filter(doc =>
-        doc.nip.includes(searchTerm) ||
-        doc.nama.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  const handleDeleteSchedule = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/jadwalharian/${deletingScheduleId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Gagal menghapus jadwal');
+      fetchSchedulesForDate();
+      setDeletingScheduleId(null);
+    } catch (error) {
+      console.error(error);
+      alert('Gagal menghapus jadwal.');
     }
-
-    setSchedules(data);
-
-  }, [searchTerm, selectedDate, selectedSpecialty, allSchedules]);
+  };
 
   const getStatusClass = (status) => {
     if (status === 'Hadir') return 'status-hadir';
@@ -117,37 +128,24 @@ const Jadwal = () => {
         <div className="jadwal-dokter-header">
           <h1>Jadwal</h1>
           <div className="jadwal-dokter-header-components">
-            <Clock/>
+            <Clock />
           </div>
         </div>
-
         <div className="jd-content">
           <div className="jd-filters">
             <div className="jd-search-bar">
               <img src={searchIcon} alt="search" />
-              <input
-                type="text"
-                placeholder="Cari berdasarkan NIP atau Nama"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+              <input type="text" placeholder="Cari berdasarkan NIP atau Nama" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             </div>
-            <select
-              className="jd-select"
-              value={selectedSpecialty}
-              onChange={(e) => setSelectedSpecialty(e.target.value)}
-            >
+            <select className="jd-select" value={selectedSpecialty} onChange={(e) => setSelectedSpecialty(e.target.value)}>
               <option value="">Semua Spesialis</option>
-              {specialistOptions.map(spec => (
-                <option key={spec} value={spec}>{spec}</option>
+              {specialistOptions.map((spec) => (
+                <option key={spec} value={spec}>
+                  {spec}
+                </option>
               ))}
             </select>
-            <input
-              type="date"
-              className="jd-date-input"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-            />
+            <input type="date" className="jd-date-input" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
             <button className="jd-btn-today" onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}>
               Pergi Ke Hari Ini
             </button>
@@ -155,52 +153,49 @@ const Jadwal = () => {
               <span>+</span> Tambah Jadwal
             </button>
           </div>
-
           <div className="jd-table-container">
             <table>
               <thead>
                 <tr>
-                  <th>No.</th><th>Nama Dokter</th><th>NIP</th><th>Spesialis</th>
-                  <th>Hari/Tanggal</th><th>Jam Mulai</th><th>Jam Selesai</th>
-                  <th>Status</th><th>Aksi</th>
+                  <th>No.</th>
+                  <th>Nama Dokter</th>
+                  <th>NIP</th>
+                  <th>Spesialis</th>
+                  <th>Hari/Tanggal</th>
+                  <th>Jam Mulai</th>
+                  <th>Jam Selesai</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 {schedules.length > 0 ? (
-                  schedules.map((schedule, index) => {
-                    const jadwalMatch = schedule.jadwal.match(/\((.*?)\)/);
-                    const jam = jadwalMatch ? jadwalMatch[1].split('-') : ['N/A', 'N/A'];
-                    const jamMulai = jam[0]?.trim();
-                    const jamSelesai = jam[1]?.trim();
-                    return (
-                      <tr key={schedule.id}>
-                        <td>{index + 1}.</td>
-                        <td>{schedule.nama}</td>
-                        <td>{schedule.nip}</td>
-                        <td>{schedule.spesialis}</td>
-                        <td>
-                          {selectedDate ? new Date(selectedDate + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'Pilih tanggal'}
-                        </td>
-                        <td>{jamMulai}</td>
-                        <td>{jamSelesai}</td>
-                        <td className={getStatusClass(schedule.status)}>{schedule.status}</td>
-                        <td>
-                          <div className="jd-aksi-buttons">
-                            <button className="jd-btn-aksi delete" onClick={() => setDeletingScheduleId(schedule.id)}>
-                              <img src={deleteIcon} alt="Hapus"/>
-                            </button>
-                            <button className="jd-btn-aksi edit" onClick={() => setEditingSchedule(schedule)}>
-                              <img src={editIcon} alt="Edit"/>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })
+                  schedules.map((schedule, index) => (
+                    <tr key={schedule.id}>
+                      <td>{index + 1}.</td>
+                      <td>{schedule.nama}</td>
+                      <td>{schedule.nip}</td>
+                      <td>{schedule.spesialis}</td>
+                      <td>{new Date(schedule.tanggal).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</td>
+                      <td>{schedule.jam_mulai}</td>
+                      <td>{schedule.jam_selesai}</td>
+                      <td className={getStatusClass(schedule.status)}>{schedule.status}</td>
+                      <td>
+                        <div className="jd-aksi-buttons">
+                          <button className="jd-btn-aksi delete" onClick={() => setDeletingScheduleId(schedule.id)}>
+                            <img src={deleteIcon} alt="Hapus" />
+                          </button>
+                          <button className="jd-btn-aksi edit" onClick={() => setEditingSchedule(schedule)}>
+                            <img src={editIcon} alt="Edit" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
                 ) : (
                   <tr>
                     <td colSpan="9" className="no-data-found">
-                      Tidak ada jadwal dokter pada hari yang dipilih.
+                      Tidak ada jadwal dokter pada kriteria yang dipilih.
                     </td>
                   </tr>
                 )}
@@ -208,40 +203,19 @@ const Jadwal = () => {
             </table>
           </div>
         </div>
-
         <div className="jadwal-dokter-footer">
-          <p>Menampilkan {schedules.length} dari <span>{dailyTotal}</span> Dokter</p>
+          <p>
+            Menampilkan {schedules.length} dari <span>{schedules.length}</span> Dokter
+          </p>
         </div>
       </div>
-
-      {showAddSchedule && (
-        <AddScheduleOverlay
-          onClose={() => setShowAddSchedule(false)}
-          onAddSchedule={handleAddSchedule}
-          doctorList={allDoctorData}
-        />
-      )}
-
-      {editingSchedule && (
-        <EditScheduleOverlay
-          schedule={editingSchedule}
-          onClose={() => setEditingSchedule(null)}
-          onUpdateSchedule={handleUpdateSchedule}
-        />
-      )}
-
+      {showAddSchedule && <AddScheduleOverlay onClose={() => setShowAddSchedule(false)} onAddSchedule={handleAddSchedule} doctorList={allDoctorList} initialDate={selectedDate} />}
+      {editingSchedule && <EditScheduleOverlay schedule={editingSchedule} onClose={() => setEditingSchedule(null)} onUpdateSchedule={handleUpdateSchedule} />}
       {deletingScheduleId && (
-        <ConfirmationOverlay
-          title="Hapus Jadwal?"
-          message="Jadwal yang dipilih akan dihapus permanen."
-          onConfirm={handleDeleteSchedule}
-          onCancel={() => setDeletingScheduleId(null)}
-          confirmText="Hapus"
-          confirmColor="delete"
-        />
+        <ConfirmationOverlay title="Hapus Jadwal?" message="Jadwal yang dipilih akan dihapus permanen." onConfirm={handleDeleteSchedule} onCancel={() => setDeletingScheduleId(null)} confirmText="Hapus" confirmColor="delete" />
       )}
     </>
   );
-}
+};
 
 export default Jadwal;

@@ -2,7 +2,7 @@
 #admin {
   display: flex;
   height: 100vh;
-  background: #FFFFFF;
+  background: #ffffff;
   color: var(--warna-tersier);
 }
 
@@ -47,7 +47,7 @@
   text-decoration: none;
   display: flex;
   align-items: center;
-  color: #FFFFFF;
+  color: #ffffff;
   padding: 25px 0 25px 30px;
   transition: background 0.3s, color 0.3s;
   z-index: 1;
@@ -80,7 +80,7 @@
   top: 0;
   left: 0;
   height: 100%;
-  background: #FFFFFF;
+  background: #ffffff;
   border-top-left-radius: 50px;
   border-bottom-left-radius: 50px;
   z-index: 0;
@@ -166,13 +166,13 @@
 
 .notification-overlay {
   position: absolute;
-  top: 120%; 
+  top: 120%;
   right: 0;
   width: 300px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  border: 1px solid #EAEAEA;
+  border: 1px solid #eaeaea;
   padding: 1.5rem;
   z-index: 10;
   animation: fadeIn 0.3s ease-in-out;
@@ -227,7 +227,7 @@
 .dashboard-jumlah-keterangan-core-patient-number h2 {
   font-size: 50px;
   font-weight: 700;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .dashboard-jumlah-keterangan-core-patient img {
@@ -237,7 +237,7 @@
 .dashboard-jumlah-keterangan-core p {
   font-size: 20px;
   font-weight: 500;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .dashboard-list {
@@ -251,13 +251,13 @@
 }
 
 .dashboard-list-graphic {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   padding: 1.5rem; /* Sedikit mengurangi padding */
   border-radius: 10px;
   width: 60%;
   height: 400px;
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.7);
 }
 
@@ -312,7 +312,7 @@
   width: 5px;
 }
 .patient-daily-table-wrapper::-webkit-scrollbar-thumb {
-  background-color: #D1D2D3;
+  background-color: #d1d2d3;
   border-radius: 10px;
 }
 
@@ -321,7 +321,8 @@
   border-collapse: collapse;
 }
 
-.patient-daily-table th, .patient-daily-table td {
+.patient-daily-table th,
+.patient-daily-table td {
   padding: 12px 8px;
   text-align: left;
   font-size: 14px;
@@ -334,7 +335,7 @@
 }
 
 .patient-daily-table tbody tr {
-  border-bottom: 1px solid #D1D2D3;
+  border-bottom: 1px solid #d1d2d3;
 }
 
 /* .patient-daily-table tbody tr:last-child {
@@ -347,12 +348,13 @@
   padding: 12px 8px;
 }
 
-.poli-umum, .poli-gigi, .poli-anak, .poli-bedah {
+.poli-umum,
+.poli-gigi,
+.poli-anak,
+.poli-bedah {
   color: var(--warna-primer); /* Warna hijau */
   font-weight: 500;
 }
-
-
 
 /* ------- Data Pasien ------- */
 
@@ -431,7 +433,7 @@
 }
 
 .data-pasien-table {
-  overflow-x: auto; 
+  overflow-x: auto;
 }
 
 .data-pasien-table table {
@@ -444,7 +446,7 @@
 .data-pasien-table td {
   padding: 0.5rem 1rem;
   text-align: left;
-  border: 1px solid #D1D2D3;
+  border: 1px solid #d1d2d3;
 }
 
 .data-pasien-table th {
@@ -466,7 +468,7 @@
 
 .btn-detail {
   background: linear-gradient(to bottom right, var(--warna-primer-gradient), var(--warna-primer));
-  color: #FFFFFF;
+  color: #ffffff;
   border: none;
   padding: 9px 29px;
   border-radius: 6px;
@@ -500,10 +502,8 @@
   text-align: center;
   padding: 3rem 0;
   font-weight: 500;
-  color: #D1D2D3; 
+  color: #d1d2d3;
 }
-
-
 
 /* ------- Overlay Detail Pasien ------- */
 
@@ -522,12 +522,21 @@
 }
 
 .overlay-container {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   padding: 2rem;
   border-radius: 12px;
   width: 90%;
   max-width: 600px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  max-height: 90vh; /* Batasi tinggi maksimal agar tidak melebihi 90% tinggi layar */
+  display: flex;
+  flex-direction: column; /* Atur layout anak-anaknya secara vertikal */
+}
+
+.overlay-content {
+  overflow-y: auto; /* Tambahkan scrollbar vertikal jika kontennya panjang */
+  padding-right: 1rem; /* Beri sedikit ruang untuk scrollbar */
+  margin-right: -1rem; /* Trik agar padding tidak menambah lebar */
 }
 
 .overlay-header {
@@ -549,7 +558,7 @@
 }
 
 .btn-close {
-  background: #D1D2D3;
+  background: #d1d2d3;
   border-radius: 50%;
   padding: 5px;
   padding-bottom: 0;
@@ -574,7 +583,7 @@
 
 .overlay-content td {
   padding: 12px 0;
-  border-bottom: 1px solid #EAEAEA;
+  border-bottom: 1px solid #eaeaea;
 }
 
 .overlay-content td:first-child {
@@ -594,7 +603,7 @@
   padding: 15px 60px;
   border-radius: 8px;
   border: none;
-  color: #FFFFFF;
+  color: #ffffff;
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -612,14 +621,12 @@
 }
 
 .btn-delete {
-  background-color: #A40000;
+  background-color: #a40000;
 }
 
 .btn-edit {
   background-color: var(--warna-primer);
 }
-
-
 
 /* ------- CSS Tambahan untuk Overlay Mode Edit ------- */
 
@@ -660,7 +667,7 @@
 .form-row select {
   width: 60%;
   padding: 8px 12px;
-  border: 1px solid #D1D2D3;
+  border: 1px solid #d1d2d3;
   border-radius: 6px;
   font-size: 15px;
 }
@@ -680,12 +687,10 @@
   margin-right: 10px;
 }
 
-
-
 /* ------- Overlay Konfirmasi ------- */
 
 .confirmation-container {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 12px;
   width: 90%;
   max-width: 400px; /* Lebih kecil dari overlay utama */
@@ -736,21 +741,19 @@
 
 .btn-confirm {
   background-color: var(--warna-primer);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 .btn-confirm:hover {
-  background-color: #2E6034; /* Versi lebih gelap dari warna primer */
+  background-color: #2e6034; /* Versi lebih gelap dari warna primer */
 }
 
 .btn-confirm.btn-confirm-delete {
-  background-color: #A40000;
+  background-color: #a40000;
 }
 
 .btn-confirm.btn-confirm-delete:hover {
   background-color: #830000; /* Versi lebih gelap dari warna merah */
 }
-
-
 
 /* ------- Data Dokter ------- */
 
@@ -822,7 +825,7 @@
 .data-dokter-table td {
   padding: 0.5rem 1rem;
   text-align: left;
-  border: 1px solid #D1D2D3;
+  border: 1px solid #d1d2d3;
 }
 
 .data-dokter-table th {
@@ -870,7 +873,7 @@
   font-weight: 400;
   padding: 10px 30px;
   background: var(--warna-primer);
-  color: #FFFFFF;
+  color: #ffffff;
   border: none;
   border-radius: 5px;
   align-items: center;
@@ -911,8 +914,6 @@
   color: var(--warna-primer);
 }
 
-
-
 /* ------- Overlay TAMBAH Dokter (prefix "ad-") ------- */
 
 .ad-overlay-container {
@@ -920,7 +921,7 @@
   display: flex;
   flex-direction: column;
   max-height: 90vh;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   padding: 1.3rem 2rem;
   border-radius: 12px;
   animation: fadeIn 0.3s ease;
@@ -943,7 +944,7 @@
 }
 
 .ad-btn-close {
-  background: #D1D2D3;
+  background: #d1d2d3;
   border-radius: 50%;
   padding: 5px;
   padding-bottom: 0;
@@ -979,7 +980,7 @@
   width: 150px;
   height: 200px;
   background: linear-gradient(to bottom right, var(--warna-sekunder), var(--warna-primer));
-  border: 2px dashed #D1D2D3;
+  border: 2px dashed #d1d2d3;
   border-radius: 10px;
   display: flex;
   justify-content: center;
@@ -1014,12 +1015,12 @@
   text-align: left;
 }
 
-.ad-form-row input[type="text"],
-.ad-form-row input[type="date"],
+.ad-form-row input[type='text'],
+.ad-form-row input[type='date'],
 .ad-form-row select {
   width: 100%;
   padding: 10px 14px;
-  border: 1px solid #D1D2D3;
+  border: 1px solid #d1d2d3;
   border-radius: 6px;
   font-size: 15px;
 }
@@ -1043,8 +1044,8 @@
 .ad-day-btn {
   flex: 1;
   padding: 8px;
-  border: 1px solid #D1D2D3;
-  background-color: #FFFFFF;
+  border: 1px solid #d1d2d3;
+  background-color: #ffffff;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
@@ -1053,7 +1054,7 @@
 
 .ad-day-btn.active {
   background-color: var(--warna-primer);
-  color: #FFFFFF;
+  color: #ffffff;
   border-color: var(--warna-primer);
 }
 
@@ -1070,7 +1071,7 @@
 
 .ad-schedule-time span {
   font-weight: 600;
-  color: #D1D2D3;
+  color: #d1d2d3;
 }
 
 .ad-form-row.status {
@@ -1091,7 +1092,7 @@
   font-weight: 400;
 }
 
-.ad-status-options input[type="radio"] {
+.ad-status-options input[type='radio'] {
   width: 18px;
   height: 18px;
   accent-color: var(--warna-primer);
@@ -1124,7 +1125,7 @@
 }
 
 .ad-btn-cancel {
-  background-color: #D1D2D3;
+  background-color: #d1d2d3;
   color: var(--warna-tersier);
 }
 
@@ -1134,23 +1135,22 @@
 
 .ad-btn-save {
   background-color: var(--warna-primer);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .ad-btn-save:hover {
   opacity: 0.8;
 }
 
-
 /* ------- Overlay PROFIL & EDIT Dokter (prefix "dd-") ------- */
 
 .dd-overlay-container {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   padding: 1.3rem 2rem;
   border-radius: 12px;
   width: 90%;
   max-width: 600px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
   animation: fadeIn 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -1162,7 +1162,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #EAEAEA;
+  border-bottom: 1px solid #eaeaea;
   padding-bottom: 1rem;
   margin-bottom: 1.5rem;
   flex-shrink: 0;
@@ -1196,7 +1196,7 @@
 }
 
 .dd-btn-close {
-  background: #D1D2D3;
+  background: #d1d2d3;
   border-radius: 50%;
   padding: 5px;
   padding-bottom: 0;
@@ -1227,8 +1227,8 @@
   border-radius: 50%;
   object-fit: cover;
   margin-bottom: 1rem;
-  border: 4px solid #FFFFFF;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border: 4px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .dd-doctor-name {
@@ -1251,7 +1251,7 @@
 
 .dd-info-table td {
   padding: 12px 10px;
-  border-bottom: 1px solid #EAEAEA;
+  border-bottom: 1px solid #eaeaea;
   font-size: 15px;
 }
 
@@ -1271,7 +1271,7 @@
 }
 
 .dd-status.inactive {
-  color: #A40000;
+  color: #a40000;
   font-weight: 600;
 }
 
@@ -1294,7 +1294,7 @@
   width: 150px;
   height: 200px;
   background: linear-gradient(to bottom right, var(--warna-sekunder), var(--warna-primer));
-  border: 2px dashed #D1D2D3;
+  border: 2px dashed #d1d2d3;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1331,12 +1331,12 @@
   text-align: left;
 }
 
-.dd-edit-form-row input[type="text"],
-.dd-edit-form-row input[type="date"],
+.dd-edit-form-row input[type='text'],
+.dd-edit-form-row input[type='date'],
 .dd-edit-form-row select {
   width: 100%;
   padding: 10px 14px;
-  border: 1px solid #D1D2D3;
+  border: 1px solid #d1d2d3;
   border-radius: 6px;
   font-size: 15px;
 }
@@ -1363,7 +1363,7 @@
   align-items: center;
 }
 
-.dd-status-options label input[type="radio"] {
+.dd-status-options label input[type='radio'] {
   width: 18px;
   height: 18px;
   accent-color: var(--warna-primer);
@@ -1375,7 +1375,7 @@
   padding: 15px 27px;
   border-radius: 8px;
   border: none;
-  color: #FFFFFF;
+  color: #ffffff;
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -1393,7 +1393,7 @@
 }
 
 .dd-btn-delete {
-  background-color: #A40000;
+  background-color: #a40000;
 }
 
 .dd-btn-delete img {
@@ -1409,7 +1409,7 @@
 }
 
 .dd-btn-discard {
-  background-color: #D1D2D3;
+  background-color: #d1d2d3;
   color: var(--warna-tersier);
 }
 
@@ -1442,8 +1442,8 @@
 .dd-day-btn {
   flex: 1;
   padding: 8px;
-  border: 1px solid #D1D2D3;
-  background-color: #FFFFFF;
+  border: 1px solid #d1d2d3;
+  background-color: #ffffff;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -1453,7 +1453,7 @@
 
 .dd-day-btn.active {
   background-color: var(--warna-primer);
-  color: #FFFFFF;
+  color: #ffffff;
   border-color: var(--warna-primer);
 }
 
@@ -1468,14 +1468,14 @@
   text-align: center;
   /* Properti ini diwarisi dari .dd-edit-form-row input */
   padding: 10px 14px;
-  border: 1px solid #D1D2D3;
+  border: 1px solid #d1d2d3;
   border-radius: 6px;
   font-size: 15px;
 }
 
 .dd-schedule-time span {
   font-weight: 600;
-  color: #D1D2D3;
+  color: #d1d2d3;
 }
 
 /* ------- Gaya Search Bar Umum (untuk Data Pasien & Data Dokter) ------- */
@@ -1520,7 +1520,6 @@
   border: 1px solid var(--warna-primer);
 }
 
-
 /* --- Sesuaikan Kolom Pencarian DATA DOKTER --- */
 .data-dokter-search-column {
   width: 100%;
@@ -1532,8 +1531,6 @@
 .data-dokter-search-column .search-bar-wrapper {
   width: 28%; /* Sesuaikan lebar jika perlu */
 }
-
-
 
 /* ------- Jadwal ------- */
 
@@ -1618,18 +1615,20 @@
   color: var(--warna-tersier);
 }
 
-.jd-select, .jd-date-input {
+.jd-select,
+.jd-date-input {
   border: 1px solid var(--warna-primer);
   border-radius: 6px;
   padding: 10px 15px;
   color: var(--warna-tersier);
 }
 
-.jd-btn-today, .jd-btn-add {
+.jd-btn-today,
+.jd-btn-add {
   padding: 10px 20px;
   border: none;
   border-radius: 6px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -1652,13 +1651,14 @@
   font-size: 20px;
 }
 
-.jd-btn-today:hover, .jd-btn-add:hover {
+.jd-btn-today:hover,
+.jd-btn-add:hover {
   opacity: 0.85;
 }
 
 .jd-table-container {
   overflow-x: auto;
-  border: 1px solid #D1D2D3;
+  border: 1px solid #d1d2d3;
   border-radius: 8px;
 }
 
@@ -1667,10 +1667,11 @@
   border-collapse: collapse;
 }
 
-.jd-table-container th, .jd-table-container td {
+.jd-table-container th,
+.jd-table-container td {
   padding: 1rem;
   text-align: left;
-  border-bottom: 1px solid #EAEAEA;
+  border-bottom: 1px solid #eaeaea;
   font-size: 15px;
   white-space: nowrap; /* Mencegah teks turun baris */
 }
@@ -1695,7 +1696,7 @@
 }
 
 .jd-table-container .status-berhalangan {
-  color: #A40000;
+  color: #a40000;
   font-weight: 600;
 }
 
@@ -1710,7 +1711,7 @@
 }
 
 .jd-btn-aksi {
-  background: #D1D2D3;
+  background: #d1d2d3;
   border: 1px solid #565656;
   border-radius: 6px;
   padding: 6px;
@@ -1727,8 +1728,8 @@
 }
 
 .jd-btn-aksi.delete:hover {
-  background-color: #A40000;
-  border-color: #A40000;
+  background-color: #a40000;
+  border-color: #a40000;
 }
 
 .jd-btn-aksi.edit:hover {
@@ -1767,7 +1768,7 @@
 
 .js-overlay-container {
   max-width: 600px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   padding: 1.3rem 2rem;
   border-radius: 12px;
   animation: fadeIn 0.3s ease;
@@ -1790,7 +1791,8 @@
   font-weight: 700;
 }
 
-.js-btn-close { /* Tombol close tidak ada di desain ini, bisa dihapus jika mau */
+.js-btn-close {
+  /* Tombol close tidak ada di desain ini, bisa dihapus jika mau */
   display: none;
 }
 
@@ -1812,10 +1814,11 @@
   color: #565656;
 }
 
-.js-form-row input, .js-form-row select {
+.js-form-row input,
+.js-form-row select {
   width: 100%;
   padding: 10px 14px;
-  border: 1px solid #D1D2D3;
+  border: 1px solid #d1d2d3;
   border-radius: 6px;
   font-size: 15px;
 }
@@ -1832,7 +1835,7 @@
   gap: 1rem;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #EAEAEA;
+  border-top: 1px solid #eaeaea;
 }
 
 .js-overlay-actions button {
@@ -1850,13 +1853,13 @@
 }
 
 .js-btn-cancel {
-  background-color: #EAEAEA;
+  background-color: #eaeaea;
   color: var(--warna-tersier);
 }
 
 .js-btn-save {
   background-color: var(--warna-primer);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .js-btn-save img {
@@ -1867,7 +1870,7 @@
 
 .es-overlay-container {
   max-width: 600px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   padding: 1.3rem 2rem;
   border-radius: 12px;
   animation: fadeIn 0.3s ease;
@@ -1905,10 +1908,11 @@
   color: #565656;
 }
 
-.es-form-row input, .es-form-row select {
+.es-form-row input,
+.es-form-row select {
   width: 100%;
   padding: 10px 14px;
-  border: 1px solid #D1D2D3;
+  border: 1px solid #d1d2d3;
   border-radius: 6px;
   font-size: 15px;
 }
@@ -1918,49 +1922,69 @@
   cursor: not-allowed;
 }
 
-.es-schedule-inputs, .es-schedule-days, .es-schedule-time {
+.es-schedule-inputs,
+.es-schedule-days,
+.es-schedule-time {
   display: flex;
   gap: 0.5rem;
 }
-.es-schedule-inputs { flex-direction: column; }
-.es-schedule-time { align-items: center; }
+.es-schedule-inputs {
+  flex-direction: column;
+}
+.es-schedule-time {
+  align-items: center;
+}
 
 .es-day-btn {
-  flex: 1; padding: 8px; border: 1px solid #D1D2D3;
-  background-color: #FFFFFF; border-radius: 6px; cursor: pointer;
-  transition: all 0.2s; font-weight: 500;
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #d1d2d3;
+  background-color: #ffffff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
 }
 .es-day-btn.active {
-  background-color: var(--warna-primer); color: #FFFFFF;
+  background-color: var(--warna-primer);
+  color: #ffffff;
   border-color: var(--warna-primer);
 }
 
 .es-overlay-actions {
-  display: flex; justify-content: flex-end; gap: 1rem;
-  margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #EAEAEA;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eaeaea;
 }
 
 .es-overlay-actions button {
-  padding: 12px 24px; border-radius: 8px; border: none;
-  font-weight: 600; cursor: pointer; display: flex;
-  align-items: center; gap: 8px; font-size: 15px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
 }
 
 .es-btn-cancel {
-  background-color: #EAEAEA;
+  background-color: #eaeaea;
   color: #565656;
 }
 
 .es-btn-save {
   background-color: var(--warna-primer);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .es-btn-save img {
   width: 16px;
 }
-
-
 
 /* ------- Halaman Riwayat Pendaftaran (prefix "rp-") ------- */
 
@@ -2063,8 +2087,8 @@
 }
 
 .rp-table-container {
-  overflow-y: auto; /* Membuat tabel bisa scroll vertikal */
-  border: 1px solid #D1D2D3;
+  overflow-x: auto; /* Aktifkan scroll horizontal jika tabel terlalu lebar */
+  border: 1px solid #d1d2d3;
   border-radius: 8px;
   flex-grow: 1;
 }
@@ -2072,18 +2096,48 @@
 .rp-table-container table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed; /* Kunci: Memaksa lebar kolom agar konsisten */
 }
 
-.rp-table-container th, 
+.rp-table-container th,
 .rp-table-container td {
-  /* Padding dibuat lebih kecil */
-  padding: 0.8rem; 
+  padding: 0.8rem 1rem;
   text-align: left;
-  border-bottom: 1px solid #EAEAEA;
-  /* Ukuran font diperkecil */
-  font-size: 14px; 
-  white-space: nowrap;
+  border-bottom: 1px solid #eaeaea;
+  font-size: 14px;
+  white-space: normal; /* Izinkan teks untuk turun baris */
+  word-wrap: break-word; /* Pecah kata jika terlalu panjang untuk mencegah overflow */
+  vertical-align: middle; /* Jaga konten tetap di tengah secara vertikal */
 }
+
+/* --- PENGATURAN LEBAR KOLOM (BARU) --- */
+.rp-table-container th:nth-child(1) {
+  width: 5%;
+} /* No. */
+.rp-table-container th:nth-child(2) {
+  width: 10%;
+} /* Tanggal */
+.rp-table-container th:nth-child(3) {
+  width: 10%;
+} /* No. Antrian */
+.rp-table-container th:nth-child(4) {
+  width: 15%;
+} /* Nama Pasien */
+.rp-table-container th:nth-child(5) {
+  width: 15%;
+} /* NIK */
+.rp-table-container th:nth-child(6) {
+  width: 12%;
+} /* Poli Tujuan */
+.rp-table-container th:nth-child(7) {
+  width: 10%;
+} /* Jam Daftar - Diperlebar */
+.rp-table-container th:nth-child(8) {
+  width: 13%;
+} /* Status Pasien - Diperlebar */
+.rp-table-container th:nth-child(9) {
+  width: 13%;
+} /* Aksi */
 
 .rp-table-container th {
   background-color: #f9f9f9;
@@ -2092,14 +2146,13 @@
   top: 0;
 }
 
-.rp-table-container tr:last-child td {
-  border-bottom: none;
+.rp-table-container td:last-child {
   text-align: center;
 }
 
 .rp-table-container td .status-baru {
   background-color: rgba(231, 193, 31, 0.2);
-  color: #B59400;
+  color: #b59400;
   padding: 4px 10px;
   border-radius: 6px;
   font-weight: 500;
@@ -2115,7 +2168,7 @@
 
 .rp-btn-detail {
   background: linear-gradient(to bottom right, var(--warna-primer-gradient), var(--warna-primer));
-  color: #FFFFFF;
+  color: #ffffff;
   border: none;
   padding: 8px 16px;
   border-radius: 6px;
@@ -2141,7 +2194,6 @@
   font-weight: 700;
   color: var(--warna-primer);
 }
-
 
 /* ------- Halaman Pesan Masuk (prefix "ap-") ------- */
 
@@ -2195,7 +2247,7 @@
 
 .ap-table-container {
   overflow-y: auto; /* Membuat tabel bisa scroll vertikal */
-  border: 1px solid #D1D2D3;
+  border: 1px solid #d1d2d3;
   border-radius: 8px;
   flex-grow: 1;
 }
@@ -2205,11 +2257,11 @@
   border-collapse: collapse;
 }
 
-.ap-table-container th, 
+.ap-table-container th,
 .ap-table-container td {
   padding: 1rem;
   text-align: left;
-  border-bottom: 1px solid #EAEAEA;
+  border-bottom: 1px solid #eaeaea;
   font-size: 15px;
 }
 
@@ -2227,7 +2279,7 @@
 
 /* Kolom pesan dibuat agar bisa text-wrap */
 .ap-table-container .pesan-text {
-  white-space: normal; 
+  white-space: normal;
   min-width: 400px; /* Atur lebar minimum agar tidak terlalu sempit */
 }
 
@@ -2244,8 +2296,6 @@
   font-weight: 700;
   color: var(--warna-tersier);
 }
-
-
 
 /* ------- Logout ------- */
 
@@ -2278,7 +2328,7 @@
 .logout-title h3 {
   font-size: 27px;
   font-weight: 500;
-  color: #D1D2D3;
+  color: #d1d2d3;
   animation: fadeInDown 0.7s ease-in-out;
 }
 
@@ -2288,7 +2338,7 @@
   border: none;
   border-radius: 10px;
   background: linear-gradient(to bottom right, var(--warna-sekunder), var(--warna-primer));
-  color: #FFFFFF;
+  color: #ffffff;
   transition: 0.3s;
   animation: fadeInUp 0.7s ease-in-out;
 }
