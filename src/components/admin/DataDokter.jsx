@@ -151,7 +151,7 @@ const DataDokter = () => {
         fetchDoctors();
         setSelectedDoctor(null);
     } catch (error) { 
-        console.error("Gagal menghapus dokter:", error);
+        console.error("Gagal menghapus dokter:", error); 
         alert(error.message);
     }
   };
