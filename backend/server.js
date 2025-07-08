@@ -247,8 +247,9 @@ app.post('/api/pendaftaran', (req, res) => {
 app.post('/api/pesan', (req, res) => {
   const { nama, email, pesan } = req.body;
   const now = new Date();
-  const tanggal = now.toISOString().split('T')[0];       // Format: YYYY-MM-DD
-  const jam = now.toTimeString().split(' ')[0];          // Format: HH:MM:SS
+  const options = { timeZone: 'Asia/Jakarta' };
+  const tanggal = now.toLocaleDateString('sv-SE', options); // Menghasilkan format YYYY-MM-DD
+  const jam = now.toLocaleTimeString('en-GB', options);          // Format: HH:MM:SS
 
   const newMessage = { tanggal, jam, nama, email, pesan };
 
@@ -266,7 +267,7 @@ app.post('/api/pesan', (req, res) => {
 // =============================
 
 app.get('/api/dokter', (req, res) => {
-  db.query('SELECT *, DATE_FORMAT(tanggal_lahir, "%d/%m/%Y") as tanggal_lahir FROM dokter ORDER BY id DESC', (err, results) => {
+  db.query('SELECT *, DATE_FORMAT(tanggal_lahir, "%d/%m/%Y") as tanggal_lahir FROM dokter ORDER BY id ASC', (err, results) => {
     if (err) res.status(500).json({ message: 'Database error', error: err });
     else res.json(results);
   });
@@ -457,7 +458,7 @@ app.get('/api/riwayat/:id', (req, res) => {
 });
 
 app.get('/api/pesan', (req, res) => {
-  db.query('SELECT *, DATE_FORMAT(tanggal, "%d/%m/%Y") as tanggal_formatted FROM pesan ORDER BY id DESC', (err, results) => {
+  db.query('SELECT *, DATE_FORMAT(tanggal, "%d/%m/%Y") as tanggal_formatted FROM pesan ORDER BY id ASC', (err, results) => {
     if (err) res.status(500).send(err);
     else {
       const formatted = results.map((m) => ({ ...m, tanggal: m.tanggal_formatted }));
