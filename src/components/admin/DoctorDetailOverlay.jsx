@@ -134,13 +134,35 @@ const DoctorDetailOverlay = ({ doctor, onClose, onUpdate, onDelete }) => {
     setShowSaveConfirmation(true);
   };
   
-  const handleConfirmSave = () => {
+  const handleConfirmSave = async () => {
     if (dataToSave) {
-      onUpdate(dataToSave); // Gunakan data dari state `dataToSave`
+      try {
+        console.log('Attempting to save data:', dataToSave); // Debug log
+        
+        // Add loading state
+        setShowSaveConfirmation(false); // Close confirmation first
+        
+        // You might want to add a loading indicator here
+        // setIsLoading(true);
+        
+        await onUpdate(dataToSave); // Wait for the update to complete
+        
+        // Only close editing mode if update was successful
+        setIsEditing(false);
+        
+      } catch (error) {
+        console.error('Error in handleConfirmSave:', error);
+        // Show error message to user
+        alert('Gagal menyimpan perubahan. Silakan coba lagi.');
+        
+        // Reopen confirmation dialog on error
+        setShowSaveConfirmation(true);
+      }
     }
-    setShowSaveConfirmation(false);
-    setDataToSave(null); // Bersihkan state
+    
+    setDataToSave(null); // Always clear the data
   };
+  
   
   
   const handleCancelSave = () => {

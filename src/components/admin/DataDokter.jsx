@@ -71,28 +71,68 @@ const DataDokter = () => {
   };
   
   const handleUpdateDoctor = async (updatedDoctor) => {
+    console.log('Starting update for doctor:', updatedDoctor); // Debug log
+    
     const formData = new FormData();
+    
+    // Loop dan append semua data ke formData
     for (const key in updatedDoctor) {
-        formData.append(key, updatedDoctor[key]);
+      // Jika 'foto' bukan file baru (masih string path), jangan di-append
+      if (key === 'foto' && typeof updatedDoctor[key] === 'string') {
+        console.log('Skipping foto field (string path):', updatedDoctor[key]);
+        continue;
+      }
+      
+      console.log(`Appending ${key}:`, updatedDoctor[key]); // Debug log
+      formData.append(key, updatedDoctor[key]);
+    }
+    
+    // Debug: Log what's being sent
+    console.log('FormData contents:');
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ': ' + pair[1]);
     }
     
     try {
-        const response = await fetch(`http://localhost:3001/api/dokter/${updatedDoctor.id}`, {
-            method: 'PUT',
-            body: formData,
-        });
-
-        // **BAGIAN YANG DIPERBAIKI: Cek respons server**
-        if (!response.ok) {
+      console.log(`Making PUT request to: http://localhost:3001/api/dokter/${updatedDoctor.id}`);
+      
+      const response = await fetch(`http://localhost:3001/api/dokter/${updatedDoctor.id}`, {
+        method: 'PUT',
+        body: formData,
+        // Add timeout to catch hanging requests
+        signal: AbortSignal.timeout(10000) // 10 second timeout
+      });
+  
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+  
+      if (!response.ok) {
+        let errorMessage = 'Gagal memperbarui data.';
+        try {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Gagal memperbarui data.');
+          errorMessage = errorData.message || errorMessage;
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+          errorMessage = `Server error: ${response.status} ${response.statusText}`;
         }
-
-        fetchDoctors();
-        setSelectedDoctor(null);
-    } catch (error) { 
-        console.error("Gagal update dokter:", error);
+        throw new Error(errorMessage);
+      }
+  
+      console.log('Update successful');
+      fetchDoctors();
+      setSelectedDoctor(null);
+      
+    } catch (error) {
+      console.error("Gagal update dokter:", error);
+      
+      // Provide more specific error messages
+      if (error.name === 'AbortError') {
+        alert('Request timeout. Server mungkin tidak merespons.');
+      } else if (error.message.includes('Failed to fetch')) {
+        alert('Tidak dapat terhubung ke server. Pastikan server backend berjalan di http://localhost:3001');
+      } else {
         alert(error.message);
+      }
     }
   };
 
