@@ -246,8 +246,10 @@ app.post('/api/pendaftaran', (req, res) => {
 // Endpoint Pesan (Tidak ada perubahan)
 app.post('/api/pesan', (req, res) => {
   const { nama, email, pesan } = req.body;
-  const tanggal = new Date().toISOString().split('T')[0];
-  const jam = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  const now = new Date();
+  const tanggal = now.toISOString().split('T')[0];       // Format: YYYY-MM-DD
+  const jam = now.toTimeString().split(' ')[0];          // Format: HH:MM:SS
+
   const newMessage = { tanggal, jam, nama, email, pesan };
 
   db.query('INSERT INTO pesan SET ?', newMessage, (err) => {
