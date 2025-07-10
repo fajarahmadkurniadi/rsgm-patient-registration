@@ -18,8 +18,9 @@ const DailyPatientList = ({ patients = [] }) => { // Terima props 'patients'
             <tr>
               <th>No.</th>
               <th>Nama Pasien</th>
-              <th>Jam Daftar</th>
+              <th>Jam Tujuan</th>
               <th>Poli</th>
+              <th>Tanggal Tujuan</th>
             </tr>
           </thead>
           <tbody>

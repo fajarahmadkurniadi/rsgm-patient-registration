@@ -2,12 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import io from 'socket.io-client';
 
 // Import semua komponen dan aset Anda
-import notificationImg from "../../assets/Dashboard/Notification Logo - Before.webp";
-import notificationAfterImg from "../../assets/Dashboard/Notification Logo - After.webp";
-import pendaftaranHariIniImg from "../../assets/Dashboard/Pendaftaran Hari ini - Dashboard.webp";
-import pasienBulanIniImg from "../../assets/Dashboard/Pasien Bulan ini - Dashboard.webp";
-import dokterAktifImg from "../../assets/Dashboard/Dokter Aktif - Dashboard.webp";
-import jadwalDokterHariIniImg from "../../assets/Dashboard/Jadwal Dokter Hari ini - Dashboard.webp";
+import notificationImg from '../../assets/Dashboard/Notification Logo - Before.webp';
+import notificationAfterImg from '../../assets/Dashboard/Notification Logo - After.webp';
+import pendaftaranHariIniImg from '../../assets/Dashboard/Pendaftaran Hari ini - Dashboard.webp';
+import pasienBulanIniImg from '../../assets/Dashboard/Pasien Bulan ini - Dashboard.webp';
+import dokterAktifImg from '../../assets/Dashboard/Dokter Aktif - Dashboard.webp';
+import jadwalDokterHariIniImg from '../../assets/Dashboard/Jadwal Dokter Hari ini - Dashboard.webp';
 import WeeklyVisitChart from './WeeklyVisitChart';
 import Clock from './Clock';
 import DailyPatientList from './DailyPatientList';
@@ -18,7 +18,9 @@ const socket = io('http://localhost:3001');
 const Dashboard = () => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [hasNewNotification, setHasNewNotification] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState("Belum ada aktivitas baru.");
+  
+  // --- PERUBAHAN 1: Gunakan array untuk menampung notifikasi ---
+  const [notifications, setNotifications] = useState([]);
 
   const [stats, setStats] = useState({
     pendaftaranHariIni: 0,
@@ -34,7 +36,7 @@ const Dashboard = () => {
       const [statsRes, pasienRes, kunjunganRes] = await Promise.all([
         fetch('http://localhost:3001/api/dashboard/stats'),
         fetch('http://localhost:3001/api/dashboard/pasien-hari-ini'),
-        fetch('http://localhost:3001/api/dashboard/kunjungan-mingguan')
+        fetch('http://localhost:3001/api/dashboard/kunjungan-mingguan'),
       ]);
       const statsData = await statsRes.json();
       const pasienData = await pasienRes.json();
@@ -43,36 +45,46 @@ const Dashboard = () => {
       setPasienHarian(pasienData);
       setKunjunganMingguan(kunjunganData);
     } catch (error) {
-      console.error("Gagal mengambil data dashboard:", error);
+      console.error('Gagal mengambil data dashboard:', error);
     }
   }, []);
 
   useEffect(() => {
     fetchDashboardData();
 
-    socket.on('pendaftaran_baru', (data) => {
+    // --- PERUBAHAN 2: Tambahkan pesan ke dalam array notifikasi ---
+    const handleNewRegistration = (data) => {
       console.log('Notifikasi pendaftaran diterima:', data.message);
-      setNotificationMessage("Ada pendaftaran pasien baru!");
+      setNotifications(prev => [...prev, 'Ada pendaftaran pasien baru!']);
       setHasNewNotification(true);
-      fetchDashboardData();
-    });
+      fetchDashboardData(); // Muat ulang data dashboard
+    };
 
-    socket.on('pesan_baru', (data) => {
+    const handleNewMessage = (data) => {
       console.log('Notifikasi pesan diterima:', data.message);
-      setNotificationMessage(data.message);
+      setNotifications(prev => [...prev, data.message]);
       setHasNewNotification(true);
-    });
+    };
+
+    socket.on('pendaftaran_baru', handleNewRegistration);
+    socket.on('pesan_baru', handleNewMessage);
 
     return () => {
-      socket.off('pendaftaran_baru');
-      socket.off('pesan_baru');
+      socket.off('pendaftaran_baru', handleNewRegistration);
+      socket.off('pesan_baru', handleNewMessage);
     };
   }, [fetchDashboardData]);
 
+  // --- PERUBAHAN 3: Logika untuk membuka, menutup, dan membersihkan notifikasi ---
   const toggleNotification = () => {
-    setIsNotificationOpen(!isNotificationOpen);
-    if (hasNewNotification) {
-      setHasNewNotification(false);
+    // Jika notifikasi akan dibuka
+    if (!isNotificationOpen) {
+      setIsNotificationOpen(true);
+      setHasNewNotification(false); // Anggap sudah dibaca, logo kembali normal
+    } else {
+      // Jika notifikasi akan ditutup
+      setIsNotificationOpen(false);
+      setNotifications([]); // Bersihkan notifikasi untuk dibuka selanjutnya
     }
   };
 
@@ -90,7 +102,12 @@ const Dashboard = () => {
           <Clock />
           {isNotificationOpen && (
             <div className="notification-overlay">
-              <p>{notificationMessage}</p>
+              {/* --- PERUBAHAN 4: Tampilkan semua notifikasi dari array --- */}
+              {notifications.length > 0 ? (
+                notifications.map((msg, index) => <p key={index}>{msg}</p>)
+              ) : (
+                <p>Belum ada aktivitas baru.</p>
+              )}
             </div>
           )}
         </div>
@@ -126,7 +143,7 @@ const Dashboard = () => {
         </div>
         <div className="dashboard-jumlah-keterangan-core">
           <div className="dashboard-jumlah-keterangan-core-patient">
-            <img src={jadwalDokterHariIniImg} alt="Jadwal Dokter Hari Ini" />
+            <img src={jadwalDokterHariIniImg} alt="Jadwal Dokter Hari ini" />
             <div className="dashboard-jumlah-keterangan-core-patient-number">
               <h2>{stats.jadwalHariIni}</h2>
             </div>
