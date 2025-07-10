@@ -37,7 +37,7 @@ const DailyPatientList = ({ patients = [] }) => { // Terima props 'patients'
               ))
             ) : (
               <tr>
-                <td colSpan="4" style={{ textAlign: 'center', padding: '2rem' }}>
+                <td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>
                   Belum ada pasien hari ini.
                 </td>
               </tr>
