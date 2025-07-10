@@ -545,14 +545,20 @@ app.get('/api/dashboard/stats', (req, res) => {
 app.get('/api/dashboard/pasien-hari-ini', (req, res) => {
   const today = toLocalDate();
   const query = `
-        SELECT ps.nama_lengkap as nama, p.jam_pemeriksaan as jamDaftar, p.poli_tujuan as poli
-        FROM pendaftaran p JOIN pasien ps ON p.pasien_id = ps.id
-        WHERE DATE(p.tanggal_pendaftaran) = ? 
-        ORDER BY p.jam_pemeriksaan ASC LIMIT 5
-    `;
+      SELECT 
+          ps.nama_lengkap as nama, 
+          p.jam_pemeriksaan as jamDaftar, 
+          p.poli_tujuan as poli,
+          DATE_FORMAT(p.tanggal_pendaftaran, '%d/%m/%Y') as tanggalTujuan
+      FROM pendaftaran p 
+      JOIN pasien ps ON p.pasien_id = ps.id
+      WHERE DATE(p.tanggal_pendaftaran) = ? 
+      ORDER BY p.jam_pemeriksaan ASC 
+      LIMIT 5
+  `;
   db.query(query, [today], (err, results) => {
-    if (err) return res.status(500).json({ message: 'Database error' });
-    res.json(results);
+      if (err) return res.status(500).json({ message: 'Database error' });
+      res.json(results);
   });
 });
 

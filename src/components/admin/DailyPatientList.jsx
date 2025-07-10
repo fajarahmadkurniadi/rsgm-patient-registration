@@ -1,14 +1,24 @@
 import React from 'react';
 
 // Fungsi helper untuk memberikan class CSS berdasarkan nama Poli
-// Ini akan berguna jika Anda ingin memberi warna berbeda untuk setiap poli di masa depan
 const getPoliClassName = (poli) => {
   if (!poli) return '';
-  // Mengubah "Gigi Umum" menjadi "poli-gigi-umum"
   return `poli-${poli.toLowerCase().replace(/\s+/g, '-')}`;
 };
 
-const DailyPatientList = ({ patients = [] }) => { // Terima props 'patients'
+// Fungsi helper untuk memformat tanggal (opsional, tapi disarankan)
+const formatDate = (dateStr) => {
+  if (!dateStr) return 'N/A';
+  // Jika format sudah DD/MM/YYYY, kembalikan langsung
+  if (dateStr.includes('/')) {
+    return dateStr;
+  }
+  // Jika format YYYY-MM-DD, ubah ke DD/MM/YYYY
+  const [year, month, day] = dateStr.split('-');
+  return `${day}/${month}/${year}`;
+};
+
+const DailyPatientList = ({ patients = [] }) => {
   return (
     <div className="patient-daily-container">
       <h2>Pasien Hari ini</h2>
@@ -33,6 +43,8 @@ const DailyPatientList = ({ patients = [] }) => { // Terima props 'patients'
                   <td className={getPoliClassName(patient.poli)}>
                     {patient.poli}
                   </td>
+                  {/* Tambahkan sel data untuk tanggal tujuan */}
+                  <td>{formatDate(patient.tanggalTujuan)}</td>
                 </tr>
               ))
             ) : (
