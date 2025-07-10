@@ -380,7 +380,6 @@ app.delete('/api/dokter/:id', (req, res) => {
   });
 });
 
-// --- Sisa Endpoint Lainnya (Tidak Berubah) ---
 
 app.get('/api/pasien', (req, res) => {
   const query = 'SELECT *, DATE_FORMAT(tanggal_lahir, "%d/%m/%Y") as tanggal_lahir_formatted, DATE_FORMAT(tanggal_pendaftaran, "%d/%m/%Y") as tanggal_daftar_formatted FROM pasien';
@@ -391,7 +390,51 @@ app.get('/api/pasien', (req, res) => {
   });
 });
 
-// GET /api/riwayat (Endpoint yang dimodifikasi untuk daftar dengan filter)
+app.put('/api/pasien/:id', (req, res) => {
+  const { id } = req.params;
+  const {
+    nama_lengkap,
+    tanggal_lahir,
+    jenis_kelamin,
+    alamat,
+    no_hp,
+    nik,
+    tanggal_pendaftaran,
+  } = req.body;
+
+  // Helper untuk mengubah format tanggal DD/MM/YYYY kembali ke YYYY-MM-DD untuk MySQL
+  const toMySQLDate = (dateStr) => {
+    if (!dateStr || !dateStr.includes('/')) return dateStr; // Jika format sudah benar, kembalikan
+    const parts = dateStr.split('/');
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  };
+
+  const dataToUpdate = {
+    nama_lengkap,
+    tanggal_lahir: toMySQLDate(tanggal_lahir),
+    jenis_kelamin,
+    alamat,
+    no_hp,
+    nik,
+    // Pastikan format tanggal daftar juga benar
+    tanggal_pendaftaran: toMySQLDate(tanggal_pendaftaran), 
+  };
+
+  const query = 'UPDATE pasien SET ? WHERE id = ?';
+
+  db.query(query, [dataToUpdate, id], (err, result) => {
+    if (err) {
+      console.error('Gagal memperbarui data pasien:', err);
+      return res.status(500).json({ message: 'Gagal memperbarui data di database.', error: err.sqlMessage });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Pasien dengan ID tersebut tidak ditemukan.' });
+    }
+    res.status(200).json({ message: 'Data pasien berhasil diperbarui.' });
+  });
+});
+
+
 // GET /api/riwayat (Endpoint yang dimodifikasi untuk daftar dengan filter)
 app.get('/api/riwayat', (req, res) => {
   const { search, tanggal } = req.query;

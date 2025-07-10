@@ -74,14 +74,14 @@ const PatientDetailOverlay = ({ patient, onClose, onUpdate, onDelete }) => {
                 <div style={{ width: '36px' }} />
               </div>
               <div className="overlay-content edit-form">
-                <div className="form-row"><label>Nama Lengkap</label><input type="text" name="nama" value={editedData.nama} onChange={handleInputChange} /></div>
+                <div className="form-row"><label>Nama Lengkap</label><input type="text" name="nama_lengkap" value={editedData.nama_lengkap} onChange={handleInputChange} /></div>
                 <div className="form-row"><label>No. Rekam Medis</label><input type="text" name="no_rm" value={editedData.no_rm} readOnly /></div>
                 <div className="form-row"><label>Tanggal Lahir</label><input type="date" name="tanggal_lahir" value={formatDateForInput(editedData.tanggal_lahir)} onChange={handleInputChange} /></div>
                 <div className="form-row"><label>Jenis Kelamin</label><select name="jenis_kelamin" value={editedData.jenis_kelamin} onChange={handleInputChange}><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option></select></div>
                 <div className="form-row"><label>Alamat</label><input type="text" name="alamat" value={editedData.alamat} onChange={handleInputChange} /></div>
                 <div className="form-row"><label>No. HP</label><input type="text" name="no_hp" value={editedData.no_hp} onChange={handleInputChange} /></div>
                 <div className="form-row"><label>Nomor Induk Keluarga</label><input type="text" name="nik" value={editedData.nik} onChange={handleInputChange} /></div>
-                <div className="form-row"><label>Tanggal Daftar</label><input type="date" name="tanggal" value={formatDateForInput(editedData.tanggal)} onChange={handleInputChange} /></div>
+                <div className="form-row"><label>Tanggal Daftar</label><input type="date" name="tanggal_pendaftaran" value={formatDateForInput(editedData.tanggal_pendaftaran)} onChange={handleInputChange} /></div>
               </div>
               <div className="overlay-actions">
                 <button className="btn-save" onClick={handleSaveChangesClick}><img src={saveIcon} alt="Simpan"/> Simpan</button>
@@ -97,14 +97,14 @@ const PatientDetailOverlay = ({ patient, onClose, onUpdate, onDelete }) => {
               <div className="overlay-content">
                 <table>
                   <tbody>
-                    <tr><td>Nama Lengkap</td><td>{patient.nama}</td></tr>
+                    <tr><td>Nama Lengkap</td><td>{patient.nama_lengkap}</td></tr>
                     <tr><td>No. Rekam Medis</td><td>{patient.no_rm}</td></tr>
                     <tr><td>Tanggal Lahir</td><td>{patient.tanggal_lahir}</td></tr>
                     <tr><td>Jenis Kelamin</td><td>{patient.jenis_kelamin}</td></tr>
                     <tr><td>Alamat</td><td>{patient.alamat}</td></tr>
                     <tr><td>No. HP</td><td>{patient.no_hp}</td></tr>
                     <tr><td>Nomor Induk Keluarga</td><td>{patient.nik}</td></tr>
-                    <tr><td>Tanggal Daftar</td><td>{patient.tanggal}</td></tr>
+                    <tr><td>Tanggal Daftar</td><td>{patient.tanggal_pendaftaran}</td></tr>
                   </tbody>
                 </table>
               </div>
